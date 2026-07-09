@@ -1,10 +1,24 @@
-import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { ForumData, ThreadData, MemberData } from './types.ts';
 import { threadSlug } from './format.ts';
 
 const DATA_ROOT = join(process.cwd(), 'data');
+
+// Use globalThis so caches survive module re-evaluation during Astro's build
+const g = globalThis as Record<string, unknown>;
+
+function cached<T>(key: string, loader: () => Promise<T>): () => Promise<T> {
+	const cacheKey = `__castro_${key}`;
+	return async () => {
+		if (g[cacheKey]) return g[cacheKey] as T;
+		const value = await loader();
+		g[cacheKey] = value;
+		return value;
+	};
+}
+
+// --- Low-level loaders ---
 
 async function readJsonDir<T>(subdir: string): Promise<T[]> {
 	const dir = join(DATA_ROOT, subdir);
@@ -17,52 +31,125 @@ async function readJsonDir<T>(subdir: string): Promise<T[]> {
 	return Promise.all(files.map(async (f) => JSON.parse(await readFile(join(dir, f), 'utf-8'))));
 }
 
-export function getForums(): Promise<ForumData[]> {
-	return readJsonDir<ForumData>('forums');
+const loadForums = cached('forums', () => readJsonDir<ForumData>('forums'));
+
+const loadAllMembers = cached('members', async () => {
+	const list = await readJsonDir<MemberData>('members');
+	return new Map(list.map((m) => [m.id, m]));
+});
+
+const loadAllThreads = cached('threads', async () => {
+	const cache = new Map<string, ThreadData>();
+	const threadsDir = join(DATA_ROOT, 'threads');
+	let subs: string[];
+	try {
+		subs = await readdir(threadsDir);
+	} catch {
+		return cache;
+	}
+	await Promise.all(
+		subs.map(async (sub) => {
+			let files: string[];
+			try {
+				files = (await readdir(join(threadsDir, sub))).filter((f) => f.endsWith('.json'));
+			} catch {
+				return;
+			}
+			await Promise.all(
+				files.map(async (f) => {
+					const id = f.replace('.json', '');
+					if (cache.has(id)) return;
+					try {
+						cache.set(id, JSON.parse(await readFile(join(threadsDir, sub, f), 'utf-8')));
+					} catch {}
+				}),
+			);
+		}),
+	);
+	return cache;
+});
+
+const loadThreadToForum = cached('threadToForum', async () => {
+	const map = new Map<string, { name: string; channelId: number }>();
+	const forums = await loadForums();
+	const threadsDir = join(DATA_ROOT, 'threads');
+	for (const forum of forums) {
+		const subDir = join(threadsDir, String(forum.channelId));
+		let files: string[];
+		try {
+			files = await readdir(subDir);
+		} catch {
+			continue;
+		}
+		for (const f of files) {
+			if (f.endsWith('.json')) {
+				const id = f.replace('.json', '');
+				if (!map.has(id)) {
+					map.set(id, { name: forum.name, channelId: forum.channelId });
+				}
+			}
+		}
+	}
+	return map;
+});
+
+const loadMemberThreadIndex = cached('memberThreadIndex', async () => {
+	const index = new Map<string, { id: string; title: string; slug: string; lastDate: string }[]>();
+	const threads = await loadAllThreads();
+	for (const [id, thread] of threads) {
+		const byAuthor = new Map<string, string>();
+		for (const post of thread.posts) {
+			const existing = byAuthor.get(post.author);
+			if (!existing || post.created > existing) {
+				byAuthor.set(post.author, post.created);
+			}
+		}
+		const slug = threadSlug(id, thread.title);
+		for (const [author, lastDate] of byAuthor) {
+			let list = index.get(author);
+			if (!list) {
+				list = [];
+				index.set(author, list);
+			}
+			list.push({ id, title: thread.title, slug, lastDate });
+		}
+	}
+	for (const list of index.values()) {
+		list.sort((a, b) => b.lastDate.localeCompare(a.lastDate));
+		if (list.length > 10) list.length = 10;
+	}
+	return index;
+});
+
+// --- Public API ---
+
+export async function getForums(): Promise<ForumData[]> {
+	return loadForums();
 }
 
 export async function getForum(channelId: number): Promise<ForumData | undefined> {
-	const forums = await getForums();
+	const forums = await loadForums();
 	return forums.find((f) => f.channelId === channelId);
 }
 
 export async function getThread(id: string): Promise<ThreadData | undefined> {
-	const threadsDir = join(DATA_ROOT, 'threads');
-	let subs: string[];
-	try {
-		subs = await readdir(threadsDir);
-	} catch {
-		return undefined;
-	}
-	for (const sub of subs) {
-		const path = join(threadsDir, sub, `${id}.json`);
-		try {
-			return JSON.parse(await readFile(path, 'utf-8'));
-		} catch {}
-	}
-	return undefined;
+	const threads = await loadAllThreads();
+	return threads.get(id);
 }
 
 export async function getAllThreadIds(): Promise<string[]> {
-	const threadsDir = join(DATA_ROOT, 'threads');
-	const ids: string[] = [];
-	let subs: string[];
-	try {
-		subs = await readdir(threadsDir);
-	} catch {
-		return [];
-	}
-	for (const sub of subs) {
-		try {
-			const files = await readdir(join(threadsDir, sub));
-			ids.push(...files.filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')));
-		} catch {}
-	}
-	return ids;
+	const threads = await loadAllThreads();
+	return [...threads.keys()];
 }
 
-export function getAllMembers(): Promise<MemberData[]> {
-	return readJsonDir<MemberData>('members');
+export async function getAllMembers(): Promise<MemberData[]> {
+	const members = await loadAllMembers();
+	return [...members.values()];
+}
+
+export async function getMember(id: number): Promise<MemberData | undefined> {
+	const members = await loadAllMembers();
+	return members.get(id);
 }
 
 export interface ThreadTeaser {
@@ -98,33 +185,9 @@ export async function getThreadTeaser(id: string): Promise<ThreadTeaser | undefi
 	};
 }
 
-export async function getMember(id: number): Promise<MemberData | undefined> {
-	const path = join(DATA_ROOT, 'members', `${id}.json`);
-	try {
-		return JSON.parse(await readFile(path, 'utf-8'));
-	} catch {
-		return undefined;
-	}
-}
-
 export async function getThreadsForMember(memberName: string): Promise<{ id: string; title: string; slug: string }[]> {
-	const ids = await getAllThreadIds();
-	const results: { id: string; title: string; slug: string; lastDate: string }[] = [];
-	for (const id of ids) {
-		const thread = await getThread(id);
-		if (!thread) continue;
-		const memberPosts = thread.posts.filter((p) => p.author === memberName);
-		if (memberPosts.length === 0) continue;
-		const lastPost = memberPosts.reduce((a, b) => (a.created > b.created ? a : b));
-		results.push({
-			id,
-			title: thread.title,
-			slug: threadSlug(id, thread.title),
-			lastDate: lastPost.created,
-		});
-	}
-	results.sort((a, b) => b.lastDate.localeCompare(a.lastDate));
-	return results.slice(0, 10);
+	const index = await loadMemberThreadIndex();
+	return index.get(memberName) ?? [];
 }
 
 export interface Breadcrumb {
@@ -133,11 +196,6 @@ export interface Breadcrumb {
 }
 
 export async function getForumForThread(threadId: string): Promise<{ name: string; channelId: number } | undefined> {
-	const forums = await getForums();
-	const threadsDir = join(DATA_ROOT, 'threads');
-	for (const forum of forums) {
-		if (existsSync(join(threadsDir, String(forum.channelId), `${threadId}.json`))) {
-			return { name: forum.name, channelId: forum.channelId };
-		}
-	}
+	const map = await loadThreadToForum();
+	return map.get(threadId);
 }

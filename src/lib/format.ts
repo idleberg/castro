@@ -1,17 +1,13 @@
-import DOMPurify from 'isomorphic-dompurify';
-
 export function routePath(path: string): string {
 	const base = import.meta.env.BASE_URL.replace(/\/$/u, '');
 	return `${base}${path}`;
 }
 
-export function sanitizeHtml(html: string): string {
-	return DOMPurify.sanitize(html);
-}
-
 export function formatDate(iso: string): string {
 	if (!iso) return '';
-	return new Date(iso).toLocaleDateString('en-US', {
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return iso;
+	return d.toLocaleDateString('en-US', {
 		year: 'numeric',
 		month: 'short',
 		day: 'numeric',
@@ -20,10 +16,12 @@ export function formatDate(iso: string): string {
 
 export function formatDateTime(iso: string): string {
 	if (!iso) return '';
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return iso;
 	return new Intl.DateTimeFormat('en-US', {
 		dateStyle: 'long',
 		timeStyle: 'short',
-	}).format(new Date(iso));
+	}).format(d);
 }
 
 export function threadIdFromUrl(url: string): string {

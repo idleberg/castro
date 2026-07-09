@@ -8,7 +8,8 @@ import { getThread, getAllThreadIds, getMember, getForumForThread } from '../../
 import { SITE_NAME } from 'astro:env/server';
 import type { Breadcrumb } from '../../lib/data.ts';
 import type { MemberData } from '../../lib/types.ts';
-import { formatDateTime, threadSlug, memberSlug, sanitizeHtml, routePath } from '../../lib/format.ts';
+import { formatDateTime, threadSlug, memberSlug, routePath } from '../../lib/format.ts';
+import { sanitizeHtml } from '../../lib/sanitize.ts';
 import { avatar } from '../../lib/avatar.ts';
 
 const PER_PAGE = 30;

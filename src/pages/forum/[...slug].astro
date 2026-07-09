@@ -9,6 +9,7 @@ import ScrollToMatch from '../../components/ScrollToMatch.astro';
 import { getForum, getForums, getAllMembers, getThreadTeaser, type ThreadTeaser } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
 import { threadIdFromUrl, routePath } from '../../lib/format.ts';
+import type { MemberData } from '../../lib/types.ts';
 
 const PER_PAGE = 50;
 
@@ -30,7 +31,10 @@ const allThreads = forum.threads.map((t) => ({ ...t, id: threadIdFromUrl(t.url) 
 const threads = allThreads.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
 const allMembers = await getAllMembers();
-const membersByName = new Map(allMembers.map((m) => [m.name, m]));
+const allMembersByName = new Map(allMembers.map((m) => [m.name, m]));
+const membersByName = new Map(
+	threads.map((t) => [t.startedBy, allMembersByName.get(t.startedBy)]).filter(([, m]) => m) as [string, MemberData][],
+);
 
 const threadTeasers = new Map<string, ThreadTeaser>();
 await Promise.all(threads.map(async (t) => {
