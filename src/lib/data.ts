@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { ForumData, ThreadData, MemberData } from './types.ts';
+export type { MemberData } from './types.ts';
 import { threadSlug } from './format.ts';
 
 const DATA_ROOT = join(process.cwd(), 'data');
@@ -123,7 +124,7 @@ const loadMemberThreadIndex = cached('memberThreadIndex', async () => {
 
 // --- Public API ---
 
-export async function getForums(): Promise<ForumData[]> {
+export function getForums(): Promise<ForumData[]> {
 	return loadForums();
 }
 

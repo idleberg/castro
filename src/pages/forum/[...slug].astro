@@ -6,10 +6,9 @@ import ThreadPopup from '../../components/ThreadPopup.astro';
 import ThreadRow from '../../components/ThreadRow.astro';
 import Pagination from '../../components/Pagination.astro';
 import ScrollToMatch from '../../components/ScrollToMatch.astro';
-import { getForum, getForums, getAllMembers, getThreadTeaser, type ThreadTeaser } from '../../lib/data.ts';
+import { getForum, getForums, getAllMembers, getThreadTeaser, type ThreadTeaser, type MemberData } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
 import { threadIdFromUrl, routePath } from '../../lib/format.ts';
-import type { MemberData } from '../../lib/types.ts';
 
 const PER_PAGE = 50;
 
