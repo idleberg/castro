@@ -39,7 +39,7 @@ const pages = pageRange(currentPage, totalPages);
 ---
 
 {totalPages > 1 && (
-	<nav aria-label="Pagination" class="sticky bottom-0 z-40 -mx-4 mt-6 flex w-auto items-center justify-between border-t border-(--color-border) bg-(--color-surface)/95 px-4 py-2 text-sm backdrop-blur-sm">
+	<nav aria-label="Pagination" class="sticky bottom-0 z-40 -mx-4 mt-6 flex w-auto items-center justify-between bg-(--color-surface)/95 px-4 py-2 text-sm backdrop-blur-sm">
 		{currentPage > 1 ? (
 			<a href={pageUrl(currentPage - 1)} class="rounded px-2 py-1 text-(--color-link) hover:bg-(--color-surface-alt)">&laquo; Prev</a>
 		) : (
