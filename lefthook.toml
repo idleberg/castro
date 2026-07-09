@@ -1,5 +1,6 @@
 [pre-commit.commands.lint]
 run = "pnpm exec oxlint --fix {staged_files}"
+glob = "*.{js,mjs,cjs,ts,mts,cts,jsx,tsx,astro,svelte,vue}"
 stage_fixed = true
 
 [pre-commit.commands.format]
