@@ -20,6 +20,9 @@ importers:
       isomorphic-dompurify:
         specifier: ^3.18.0
         version: 3.18.0
+      pagefind:
+        specifier: ^1.5.2
+        version: 1.5.2
     devDependencies:
       '@iconify-json/ph':
         specifier: ^1.2.2
@@ -36,9 +39,6 @@ importers:
       oxlint:
         specifier: ^1.73.0
         version: 1.73.0
-      pagefind:
-        specifier: ^1.5.2
-        version: 1.5.2
       tailwindcss:
         specifier: ^4.1.0
         version: 4.3.2

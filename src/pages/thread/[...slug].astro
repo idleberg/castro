@@ -8,7 +8,7 @@ import { getThread, getAllThreadIds, getMember, getForumForThread } from '../../
 import { SITE_NAME } from 'astro:env/server';
 import type { Breadcrumb } from '../../lib/data.ts';
 import type { MemberData } from '../../lib/types.ts';
-import { formatDateTime, threadSlug, memberSlug, sanitizeHtml } from '../../lib/format.ts';
+import { formatDateTime, threadSlug, memberSlug, sanitizeHtml, routePath } from '../../lib/format.ts';
 import { avatar } from '../../lib/avatar.ts';
 
 const PER_PAGE = 30;
@@ -33,16 +33,16 @@ export async function getStaticPaths() {
 
 const { threadId, page, totalPages, threadSlug: tSlug } = Astro.props;
 const thread = await getThread(threadId);
-if (!thread) return Astro.redirect('/');
+if (!thread) return Astro.redirect(routePath('/'));
 const parentForum = await getForumForThread(threadId);
 
 const crumbs: Breadcrumb[] = [
-	{ label: SITE_NAME, href: '/' },
+	{ label: SITE_NAME, href: routePath('/') },
 ];
 if (parentForum) {
-	crumbs.push({ label: parentForum.name, href: `/forum/${parentForum.channelId}` });
+	crumbs.push({ label: parentForum.name, href: routePath(`/forum/${parentForum.channelId}`) });
 }
-crumbs.push({ label: thread.title, href: `/thread/${tSlug}` });
+crumbs.push({ label: thread.title, href: routePath(`/thread/${tSlug}`) });
 
 const posts = thread.posts.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -65,7 +65,7 @@ await Promise.all(authorIds.map(async (id) => {
 				<article id={`post-${post.id}`} class="rounded-lg bg-(--color-surface-alt) p-4">
 					<header class="mb-3 flex flex-wrap items-center gap-3 border-b border-(--color-border) pb-2">
 						<a
-							href={`/member/${memberSlug(post.authorId, post.author)}`}
+							href={routePath(`/member/${memberSlug(post.authorId, post.author)}`)}
 							class="member-trigger flex items-center gap-2 font-semibold text-inherit no-underline hover:underline"
 							data-member-id={post.authorId}
 						>
@@ -89,7 +89,7 @@ await Promise.all(authorIds.map(async (id) => {
 							<ul class="space-y-0.5">
 								{post.attachments.map((att) => (
 									<li class="text-xs">
-										<a href={att.url ?? `/attachments/${att.id}`} {...((att.url ?? '/').startsWith('/') ? { download: att.name } : { target: '_blank', rel: 'noopener' })} class="text-(--color-link) hover:underline">{att.name}</a>
+										<a href={att.url ?? routePath(`/attachments/${att.id}`)} {...((att.url ?? '/').startsWith('/') ? { download: att.name } : { target: '_blank', rel: 'noopener' })} class="text-(--color-link) hover:underline">{att.name}</a>
 										{(att.size || att.views > 0) && (
 											<span class="text-(--color-text-muted) ml-1">({[att.size, att.views > 0 && `${att.views.toLocaleString()} views`].filter(Boolean).join(', ')})</span>
 										)}
@@ -102,7 +102,7 @@ await Promise.all(authorIds.map(async (id) => {
 		))}
 	</div>
 
-	<Pagination currentPage={page} totalPages={totalPages} baseUrl={`/thread/${tSlug}`} />
+	<Pagination currentPage={page} totalPages={totalPages} baseUrl={routePath(`/thread/${tSlug}`)} />
 
 	<MemberPopup members={members} />
 </Layout>

@@ -8,7 +8,7 @@ import Pagination from '../../components/Pagination.astro';
 import ScrollToMatch from '../../components/ScrollToMatch.astro';
 import { getForum, getForums, getAllMembers, getThreadTeaser, type ThreadTeaser } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
-import { threadIdFromUrl } from '../../lib/format.ts';
+import { threadIdFromUrl, routePath } from '../../lib/format.ts';
 
 const PER_PAGE = 50;
 
@@ -25,7 +25,7 @@ export async function getStaticPaths() {
 
 const { channelId, page, totalPages } = Astro.props;
 const forum = await getForum(channelId);
-if (!forum) return Astro.redirect('/');
+if (!forum) return Astro.redirect(routePath('/'));
 const allThreads = forum.threads.map((t) => ({ ...t, id: threadIdFromUrl(t.url) }));
 const threads = allThreads.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -42,8 +42,8 @@ await Promise.all(threads.map(async (t) => {
 
 <Layout title={`${forum.name} — ${SITE_NAME}`} indexable={false}>
 	<Breadcrumbs items={[
-		{ label: SITE_NAME, href: '/' },
-		{ label: forum.name, href: `/forum/${channelId}` },
+		{ label: SITE_NAME, href: routePath('/') },
+		{ label: forum.name, href: routePath(`/forum/${channelId}`) },
 	]} />
 
 	<h1 class="text-2xl font-bold mb-1 mt-4">{forum.name}</h1>
@@ -77,7 +77,7 @@ await Promise.all(threads.map(async (t) => {
 		</tbody>
 	</table>
 
-	<Pagination currentPage={page} totalPages={totalPages} baseUrl={`/forum/${channelId}`} />
+	<Pagination currentPage={page} totalPages={totalPages} baseUrl={routePath(`/forum/${channelId}`)} />
 
 	<MemberPopup members={membersByName} />
 	<ThreadPopup threads={threadTeasers} />

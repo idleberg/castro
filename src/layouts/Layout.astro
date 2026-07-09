@@ -4,6 +4,7 @@ import IconSun from '~icons/ph/sun-bold';
 import IconMoon from '~icons/ph/moon-bold';
 import IconMonitor from '~icons/ph/monitor-bold';
 import { SITE_NAME } from 'astro:env/server';
+import { routePath } from '../lib/format.ts';
 
 interface Props {
 	title?: string;
@@ -18,7 +19,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{title}</title>
-    <link rel="icon" href="/favicon.svg" />
+    <link rel="icon" href={routePath('/favicon.svg')} />
 		<script is:inline>
 			window.__popup = (function() {
 				var PAD = 8;
@@ -76,13 +77,13 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 			})();
 		</script>
 	</head>
-	<body class="bg-(--color-surface) text-(--color-text) flex min-h-screen flex-col transition-colors">
+	<body class="bg-(--color-surface) text-(--color-text) flex min-h-screen flex-col transition-colors" data-base={routePath('/')}>
 		<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-(--color-accent) focus:px-4 focus:py-2 focus:text-white focus:outline-none">
 			Skip to content
 		</a>
 		<div class="mx-auto w-full max-w-4xl flex-1 px-4">
 			<header class="flex items-center justify-between gap-4 border-b border-(--color-border) py-4 mb-6">
-				<a href="/" class="text-lg font-bold no-underline shrink-0">
+				<a href={routePath('/')} class="text-lg font-bold no-underline shrink-0">
 					{SITE_NAME}
 				</a>
 				<div class="relative" id="search-wrapper">
@@ -211,7 +212,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 				async function loadPagefind() {
 					if (pagefind) return pagefind;
 					try {
-						pagefind = await import('/pagefind/pagefind.js');
+						var base = document.body.dataset.base || '/';
+						pagefind = await import(base + 'pagefind/pagefind.js');
 						await pagefind.init();
 					} catch(e) {
 						pagefind = null;

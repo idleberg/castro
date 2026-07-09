@@ -1,5 +1,10 @@
 import DOMPurify from 'isomorphic-dompurify';
 
+export function routePath(path: string): string {
+	const base = import.meta.env.BASE_URL.replace(/\/$/u, '');
+	return `${base}${path}`;
+}
+
 export function sanitizeHtml(html: string): string {
 	return DOMPurify.sanitize(html);
 }

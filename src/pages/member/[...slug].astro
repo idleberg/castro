@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { getAllMembers, getMember, getThreadsForMember } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
-import { formatDate, slugify } from '../../lib/format.ts';
+import { formatDate, slugify, routePath } from '../../lib/format.ts';
 import { avatar } from '../../lib/avatar.ts';
 
 export async function getStaticPaths() {
@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 
 const { memberId } = Astro.props;
 const member = await getMember(memberId);
-if (!member) return Astro.redirect('/');
+if (!member) return Astro.redirect(routePath('/'));
 const activeThreads = await getThreadsForMember(member.name);
 
 const info = [
@@ -29,8 +29,8 @@ const info = [
 
 <Layout title={`${member.name} — ${SITE_NAME}`}>
 	<Breadcrumbs items={[
-		{ label: SITE_NAME, href: '/' },
-		{ label: member.name, href: `/member/${memberId}/${slugify(member.name)}` },
+		{ label: SITE_NAME, href: routePath('/') },
+		{ label: member.name, href: routePath(`/member/${memberId}/${slugify(member.name)}`) },
 	]} />
 
 	<div class="mt-4 flex items-center gap-4 mb-6">
@@ -56,7 +56,7 @@ const info = [
 			<ul class="space-y-1 text-sm list-none p-0">
 				{activeThreads.map((t) => (
 					<li>
-						<span class="text-(--color-text-muted)">–</span> <a href={`/thread/${t.slug}`} class="text-(--color-link) hover:underline">{t.title}</a>
+						<span class="text-(--color-text-muted)">–</span> <a href={routePath(`/thread/${t.slug}`)} class="text-(--color-link) hover:underline">{t.title}</a>
 					</li>
 				))}
 			</ul>

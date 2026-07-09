@@ -6,7 +6,7 @@ import ThreadRow from '../components/ThreadRow.astro';
 import Pagination from '../components/Pagination.astro';
 import ScrollToMatch from '../components/ScrollToMatch.astro';
 import { getForums, getAllMembers, getThreadTeaser, type ThreadTeaser } from '../lib/data.ts';
-import { threadIdFromUrl } from '../lib/format.ts';
+import { threadIdFromUrl, routePath } from '../lib/format.ts';
 import IconFolder from '~icons/ph/folder-bold';
 
 const PER_PAGE = 50;
@@ -53,7 +53,7 @@ await Promise.all(threads.map(async (t) => {
 					<tr class="border-b border-(--color-border)">
 						<td class="px-2 py-2 font-bold" colspan="5">
 							<IconFolder class="mr-1 inline size-3.5 text-(--color-text-muted)" aria-hidden="true" />
-							<a href={`/forum/${forum.channelId}`} class="text-(--color-link) hover:underline">{forum.name}</a>
+							<a href={routePath(`/forum/${forum.channelId}`)} class="text-(--color-link) hover:underline">{forum.name}</a>
 							<span class="ml-2 text-xs font-normal text-(--color-text-muted)">{forum.threads.length} threads</span>
 						</td>
 					</tr>
@@ -75,7 +75,7 @@ await Promise.all(threads.map(async (t) => {
 		</table>
 
 		{mainForum && totalPages > 1 && (
-			<Pagination currentPage={1} totalPages={totalPages} baseUrl={`/forum/${mainForum.channelId}`} />
+			<Pagination currentPage={1} totalPages={totalPages} baseUrl={routePath(`/forum/${mainForum.channelId}`)} />
 		)}
 
 		<MemberPopup members={membersByName} />
