@@ -4,5 +4,5 @@ glob = "*.{js,mjs,cjs,ts,mts,cts,jsx,tsx,astro,svelte,vue}"
 stage_fixed = true
 
 [pre-commit.commands.format]
-run = "pnpm exec oxfmt --write {staged_files}"
+run = "pnpm exec oxfmt --write --no-error-on-unmatched-pattern {staged_files}"
 stage_fixed = true
