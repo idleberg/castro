@@ -1,0 +1,65 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getAllMembers, getMember, getThreadsForMember } from '../../lib/data.ts';
+import { SITE_NAME } from 'astro:env/server';
+import { formatDate, slugify } from '../../lib/format.ts';
+import { avatar } from '../../lib/avatar.ts';
+
+export async function getStaticPaths() {
+	const members = await getAllMembers();
+	return members.map((m) => ({
+		params: { slug: `${m.id}/${slugify(m.name)}` },
+		props: { memberId: m.id },
+	}));
+}
+
+const { memberId } = Astro.props;
+const member = await getMember(memberId);
+if (!member) return Astro.redirect('/');
+const activeThreads = await getThreadsForMember(member.name);
+
+const info = [
+	member.joinDate && ['Joined', formatDate(member.joinDate), member.joinDate],
+	member.lastActivity && ['Last active', formatDate(member.lastActivity), member.lastActivity],
+	member.totalPosts && ['Posts', member.totalPosts.toLocaleString()],
+	member.location && ['Location', member.location],
+].filter(Boolean) as [string, string, string?][];
+---
+
+<Layout title={`${member.name} — ${SITE_NAME}`}>
+	<Breadcrumbs items={[
+		{ label: SITE_NAME, href: '/' },
+		{ label: member.name, href: `/member/${memberId}/${slugify(member.name)}` },
+	]} />
+
+	<div class="mt-4 flex items-center gap-4 mb-6">
+		<span class="inline-block size-16 rounded-full overflow-hidden ring-1 ring-(--color-border)" aria-hidden="true" set:html={avatar(member.name)} />
+		<div>
+			<h1 class="text-2xl font-bold">{member.name}</h1>
+			{member.title && <p class="text-(--color-text-muted)">{member.title}</p>}
+		</div>
+	</div>
+
+	<dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm mb-8">
+		{info.map(([label, value, iso]) => (
+			<>
+				<dt class="text-(--color-text-muted)">{label}</dt>
+				<dd>{iso ? <time datetime={iso} title={iso}>{value}</time> : value}</dd>
+			</>
+		))}
+	</dl>
+
+	{activeThreads.length > 0 && (
+		<section>
+			<h2 class="text-lg font-semibold mb-3">Recent activity</h2>
+			<ul class="space-y-1 text-sm list-none p-0">
+				{activeThreads.map((t) => (
+					<li>
+						<span class="text-(--color-text-muted)">–</span> <a href={`/thread/${t.slug}`} class="text-(--color-link) hover:underline">{t.title}</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)}
+</Layout>

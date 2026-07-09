@@ -1,0 +1,115 @@
+---
+import { avatar } from '../lib/avatar.ts';
+import { formatDate } from '../lib/format.ts';
+import type { MemberData } from '../lib/types.ts';
+interface Props {
+	members: Map<string | number, MemberData>;
+}
+
+const { members } = Astro.props;
+
+const membersJson = JSON.stringify(Object.fromEntries(
+	[...members.entries()].map(([key, m]) => [key, {
+		name: m.name,
+		title: m.title,
+		joinDate: m.joinDate ? [formatDate(m.joinDate), m.joinDate] : null,
+		lastActivity: m.lastActivity ? [formatDate(m.lastActivity), m.lastActivity] : null,
+		totalPosts: m.totalPosts,
+		location: m.location,
+		avatar: avatar(m.name),
+	}])
+));
+---
+
+<div id="member-popup" class="fixed z-50 hidden rounded-lg border border-(--color-border) bg-(--color-surface) p-4 shadow-xl max-w-xs" role="tooltip">
+	<div id="popup-content"></div>
+</div>
+
+<script is:inline define:vars={{ membersJson }}>
+	var members = JSON.parse(membersJson);
+	var popup = document.querySelector('#member-popup');
+	var content = document.querySelector('#popup-content');
+	var pp = window.__popup;
+	var timers = pp.createTimers();
+	var activeTrigger = null;
+
+	function esc(s) {
+		var d = document.createElement('div');
+		d.textContent = s;
+		return d.innerHTML;
+	}
+
+	function render(key) {
+		var m = members[key];
+		if (!m) return false;
+		var rows = [
+			m.joinDate && ['Joined', m.joinDate[0]],
+			m.lastActivity && ['Last active', m.lastActivity[0]],
+			m.totalPosts && ['Posts', m.totalPosts.toLocaleString()],
+			m.location && ['Location', m.location],
+		].filter(Boolean);
+
+		content.innerHTML =
+			'<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">' +
+			'<span style="display:inline-block;width:4rem;height:4rem;border-radius:9999px;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px var(--color-border)" aria-hidden="true">' + m.avatar + '</span>' +
+			'<div>' +
+			'<h2 style="font-size:1.25rem;font-weight:700">' + esc(m.name) + '</h2>' +
+			(m.title ? '<p style="color:var(--color-text-muted)">' + esc(m.title) + '</p>' : '') +
+			'</div></div>' +
+			'<dl style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;font-size:0.875rem">' +
+			rows.map(function(r) {
+				return '<dt style="color:var(--color-text-muted)">' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>';
+			}).join('') +
+			'</dl>';
+		return true;
+	}
+
+	function show(key, cx, cy) {
+		if (!render(key)) return;
+		pp.position(popup, cx, cy);
+	}
+
+	function showFromElement(key, el) {
+		if (!render(key)) return;
+		pp.positionFromElement(popup, el);
+		activeTrigger = el;
+	}
+
+	function hide() {
+		popup.classList.add('hidden');
+		activeTrigger = null;
+	}
+
+	document.querySelectorAll('.member-trigger').forEach(function(el) {
+		var key = el.dataset.memberId || el.dataset.memberName;
+
+		el.setAttribute('aria-describedby', 'member-popup');
+
+		el.addEventListener('mouseenter', function(e) {
+			var cx = e.clientX, cy = e.clientY;
+			timers.scheduleShow(function() { show(key, cx, cy); });
+		});
+		el.addEventListener('mouseleave', function() { timers.scheduleHide(hide); });
+		el.addEventListener('focus', function() {
+			timers.scheduleShow(function() { showFromElement(key, el); });
+		});
+		el.addEventListener('blur', function() { timers.scheduleHide(hide); });
+
+		el.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape') {
+				hide();
+				el.focus();
+			}
+		});
+	});
+
+	popup.addEventListener('mouseenter', function() { timers.cancelHide(); });
+	popup.addEventListener('mouseleave', function() { timers.scheduleHide(hide); });
+
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape' && !popup.classList.contains('hidden')) {
+			hide();
+			if (activeTrigger) activeTrigger.focus();
+		}
+	});
+</script>

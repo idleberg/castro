@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import MemberPopup from '../../components/MemberPopup.astro';
+import ThreadPopup from '../../components/ThreadPopup.astro';
+import ThreadRow from '../../components/ThreadRow.astro';
+import Pagination from '../../components/Pagination.astro';
+import ScrollToMatch from '../../components/ScrollToMatch.astro';
+import { getForum, getForums, getAllMembers, getThreadTeaser, type ThreadTeaser } from '../../lib/data.ts';
+import { SITE_NAME } from 'astro:env/server';
+import { threadIdFromUrl } from '../../lib/format.ts';
+
+const PER_PAGE = 50;
+
+export async function getStaticPaths() {
+	const forums = await getForums();
+	return forums.flatMap((f) => {
+		const totalPages = Math.max(1, Math.ceil(f.threads.length / 50));
+		return Array.from({ length: totalPages }, (_, i) => ({
+			params: { slug: i === 0 ? String(f.channelId) : `${f.channelId}/page/${i + 1}` },
+			props: { channelId: f.channelId, page: i + 1, totalPages },
+		}));
+	});
+}
+
+const { channelId, page, totalPages } = Astro.props;
+const forum = await getForum(channelId);
+if (!forum) return Astro.redirect('/');
+const allThreads = forum.threads.map((t) => ({ ...t, id: threadIdFromUrl(t.url) }));
+const threads = allThreads.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+const allMembers = await getAllMembers();
+const membersByName = new Map(allMembers.map((m) => [m.name, m]));
+
+const threadTeasers = new Map<string, ThreadTeaser>();
+await Promise.all(threads.map(async (t) => {
+	if (!t.id) return;
+	const teaser = await getThreadTeaser(t.id);
+	if (teaser) threadTeasers.set(t.id, teaser);
+}));
+---
+
+<Layout title={`${forum.name} — ${SITE_NAME}`} indexable={false}>
+	<Breadcrumbs items={[
+		{ label: SITE_NAME, href: '/' },
+		{ label: forum.name, href: `/forum/${channelId}` },
+	]} />
+
+	<h1 class="text-2xl font-bold mb-1 mt-4">{forum.name}</h1>
+	<p class="text-(--color-text-muted) mb-4">{allThreads.length} threads</p>
+
+	<table class="w-full border-collapse text-sm">
+		<caption class="sr-only">{forum.name} threads</caption>
+		<thead>
+			<tr class="border-b-2 border-(--color-border) text-left text-(--color-text-muted)">
+				<th scope="col" class="w-1/2 px-2 py-2 font-semibold">Thread</th>
+				<th scope="col" class="px-2 py-2 font-semibold">Started by</th>
+				<th scope="col" class="px-2 py-2 font-semibold">Date</th>
+				<th scope="col" class="px-2 py-2 text-right font-semibold">Replies</th>
+				<th scope="col" class="px-2 py-2 text-right font-semibold">Views</th>
+			</tr>
+		</thead>
+		<tbody>
+			{threads.map((t) => (
+				<ThreadRow
+					id={t.id}
+					title={t.title}
+					startedBy={t.startedBy}
+					createdDate={t.createdDate}
+					responses={t.responses}
+					views={t.views}
+					sticky={t.sticky}
+					closed={t.closed}
+					member={membersByName.get(t.startedBy)}
+				/>
+			))}
+		</tbody>
+	</table>
+
+	<Pagination currentPage={page} totalPages={totalPages} baseUrl={`/forum/${channelId}`} />
+
+	<MemberPopup members={membersByName} />
+	<ThreadPopup threads={threadTeasers} />
+</Layout>
+
+<ScrollToMatch selector='tr[id^="thread-"]' />

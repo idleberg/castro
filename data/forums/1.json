@@ -1,0 +1,74 @@
+{
+	"url": "/forum/the-agora",
+	"name": "The Agora",
+	"channelId": 1,
+	"isRoot": true,
+	"totalPages": 1,
+	"threads": [
+		{
+			"url": "/forum/the-agora/5-introduce-yourself",
+			"title": "Introduce yourself",
+			"startedBy": "Athena",
+			"createdDate": "2001-01-05T10:00:00.000Z",
+			"modifiedDate": "2001-03-30T14:20:00.000Z",
+			"nodeId": 5,
+			"responses": 4,
+			"views": 1503,
+			"sticky": true,
+			"closed": false,
+			"forumPage": 1
+		},
+		{
+			"url": "/forum/the-agora/1-is-glory-worth-dying-young",
+			"title": "Is glory worth dying young?",
+			"startedBy": "Achilles",
+			"createdDate": "2001-01-20T01:30:00.000Z",
+			"modifiedDate": "2001-01-24T18:45:00.000Z",
+			"nodeId": 1,
+			"responses": 5,
+			"views": 2841,
+			"sticky": false,
+			"closed": false,
+			"forumPage": 1
+		},
+		{
+			"url": "/forum/the-agora/2-just-got-back-from-a-10-year-trip-ama",
+			"title": "Just got back from a 10 year trip — AMA",
+			"startedBy": "Odysseus",
+			"createdDate": "2001-02-14T09:15:00.000Z",
+			"modifiedDate": "2001-02-18T23:40:00.000Z",
+			"nodeId": 2,
+			"responses": 5,
+			"views": 4210,
+			"sticky": false,
+			"closed": false,
+			"forumPage": 1
+		},
+		{
+			"url": "/forum/the-agora/3-mapping-the-underworld-whos-been",
+			"title": "Mapping the underworld — who's been?",
+			"startedBy": "Dante",
+			"createdDate": "2001-03-08T22:00:00.000Z",
+			"modifiedDate": "2001-03-13T16:30:00.000Z",
+			"nodeId": 3,
+			"responses": 5,
+			"views": 3150,
+			"sticky": false,
+			"closed": false,
+			"forumPage": 1
+		},
+		{
+			"url": "/forum/the-agora/4-the-mods-on-olympus-are-out-of-control",
+			"title": "The mods on Olympus are out of control",
+			"startedBy": "Achilles",
+			"createdDate": "2001-03-25T03:10:00.000Z",
+			"modifiedDate": "2001-03-29T20:55:00.000Z",
+			"nodeId": 4,
+			"responses": 5,
+			"views": 5602,
+			"sticky": false,
+			"closed": true,
+			"forumPage": 1
+		}
+	]
+}

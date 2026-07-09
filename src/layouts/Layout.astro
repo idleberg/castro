@@ -1,0 +1,367 @@
+---
+import '../styles/global.css';
+import IconSun from '~icons/ph/sun-bold';
+import IconMoon from '~icons/ph/moon-bold';
+import IconMonitor from '~icons/ph/monitor-bold';
+import { SITE_NAME } from 'astro:env/server';
+
+interface Props {
+	title?: string;
+	indexable?: boolean;
+}
+
+const { title = SITE_NAME, indexable = true } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+    <link rel="icon" href="/favicon.svg" />
+		<script is:inline>
+			window.__popup = (function() {
+				var PAD = 8;
+				var OFFSET = 12;
+
+				function position(popup, cx, cy) {
+					popup.style.left = '0px';
+					popup.style.top = '0px';
+					popup.classList.remove('hidden');
+
+					var rect = popup.getBoundingClientRect();
+					var x = cx + OFFSET;
+					var y = cy + OFFSET;
+
+					if (x + rect.width + PAD > window.innerWidth) x = cx - OFFSET - rect.width;
+					if (x < PAD) x = PAD;
+					if (y + rect.height + PAD > window.innerHeight) y = cy - OFFSET - rect.height;
+					if (y < PAD) y = PAD;
+
+					popup.style.left = x + 'px';
+					popup.style.top = y + 'px';
+				}
+
+				function positionFromElement(popup, el) {
+					var rect = el.getBoundingClientRect();
+					position(popup, rect.left, rect.bottom);
+				}
+
+				function createTimers() {
+					var hideTimer, showTimer;
+					return {
+						scheduleShow: function(fn, delay) {
+							clearTimeout(hideTimer);
+							clearTimeout(showTimer);
+							showTimer = setTimeout(fn, delay || 500);
+						},
+						scheduleHide: function(fn, delay) {
+							clearTimeout(showTimer);
+							hideTimer = setTimeout(fn, delay || 200);
+						},
+						cancelHide: function() {
+							clearTimeout(hideTimer);
+						}
+					};
+				}
+
+				return { position: position, positionFromElement: positionFromElement, createTimers: createTimers };
+			})();
+		</script>
+		<script is:inline>
+			(function() {
+				var s = localStorage.getItem('theme');
+				var dark = s === 'dark' || (s !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+				if (dark) document.documentElement.classList.add('dark');
+			})();
+		</script>
+	</head>
+	<body class="bg-(--color-surface) text-(--color-text) flex min-h-screen flex-col transition-colors">
+		<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-(--color-accent) focus:px-4 focus:py-2 focus:text-white focus:outline-none">
+			Skip to content
+		</a>
+		<div class="mx-auto w-full max-w-4xl flex-1 px-4">
+			<header class="flex items-center justify-between gap-4 border-b border-(--color-border) py-4 mb-6">
+				<a href="/" class="text-lg font-bold no-underline shrink-0">
+					{SITE_NAME}
+				</a>
+				<div class="relative" id="search-wrapper">
+					<button
+						id="search-button"
+						type="button"
+						class="flex items-center gap-2 rounded-lg border border-(--color-border) bg-(--color-surface) px-3 py-1.5 text-sm text-(--color-text-muted) hover:border-(--color-accent) transition-colors cursor-pointer"
+						aria-label="Search"
+					>
+						<svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg>
+						<span class="hidden sm:inline">Search</span>
+						<kbd id="search-shortcut" class="hidden sm:inline-flex items-center gap-0.5 rounded border border-(--color-border) bg-(--color-surface-alt) px-1.5 py-0.5 font-mono text-xs text-(--color-text-muted)"></kbd>
+					</button>
+					<div id="search-modal" class="hidden fixed inset-0 z-50">
+						<div id="search-backdrop" class="absolute inset-0 bg-black/50"></div>
+						<div class="relative mx-auto mt-[15vh] w-full max-w-xl px-4">
+							<div id="search-panel" class="rounded-xl border border-(--color-border) bg-(--color-surface) shadow-2xl">
+								<div class="flex items-center gap-3 border-b border-(--color-border) px-5 py-4">
+									<svg class="size-5 shrink-0 text-(--color-text-muted)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg>
+									<input
+										id="search-input"
+										type="search"
+										placeholder="Search…"
+										aria-autocomplete="list"
+										aria-controls="search-results"
+										aria-activedescendant=""
+										class="flex-1 bg-transparent p-1 text-base text-(--color-text) placeholder:text-(--color-text-muted) outline-none"
+									/>
+									<kbd class="rounded border border-(--color-border) bg-(--color-surface-alt) px-1.5 py-0.5 font-mono text-xs text-(--color-text-muted)">Esc</kbd>
+								</div>
+								<div id="search-results" role="listbox" aria-label="Search results" class="max-h-96 overflow-y-auto empty:hidden p-2"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="flex shrink-0 rounded-lg border border-(--color-border)" role="radiogroup" aria-label="Theme">
+					<button data-theme="light" role="radio" class="theme-btn rounded-l-[calc(0.5rem-1px)] px-2.5 py-1.5 text-(--color-text-muted) hover:bg-(--color-surface-alt) transition-colors cursor-pointer" aria-label="Light theme">
+						<IconSun class="size-4" aria-hidden="true" />
+					</button>
+					<button data-theme="system" role="radio" class="theme-btn border-x border-(--color-border) px-2.5 py-1.5 text-(--color-text-muted) hover:bg-(--color-surface-alt) transition-colors cursor-pointer" aria-label="System theme">
+						<IconMonitor class="size-4" aria-hidden="true" />
+					</button>
+					<button data-theme="dark" role="radio" class="theme-btn rounded-r-[calc(0.5rem-1px)] px-2.5 py-1.5 text-(--color-text-muted) hover:bg-(--color-surface-alt) transition-colors cursor-pointer" aria-label="Dark theme">
+						<IconMoon class="size-4" aria-hidden="true" />
+					</button>
+				</div>
+			</header>
+			<main id="main-content" {...(indexable ? { 'data-pagefind-body': '' } : {})}>
+				<slot />
+			</main>
+		</div>
+
+		<footer class="mt-12 border-t border-(--color-border) py-6 text-center text-sm text-(--color-text-muted)">
+			Powered by <a class="underline" href="https://github.com/idleberg/castro" target="_blank" rel="noopener noreferrer">castro</a>
+		</footer>
+
+		<script is:inline>
+			(function() {
+				var btns = document.querySelectorAll('.theme-btn');
+
+				function current() {
+					return localStorage.getItem('theme') || 'system';
+				}
+
+				function apply(mode) {
+					var dark = mode === 'dark' || (mode === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+					document.documentElement.classList.toggle('dark', dark);
+					btns.forEach(function(b) {
+						var active = b.dataset.theme === mode;
+						b.classList.toggle('bg-(--color-surface-alt)', active);
+						b.classList.toggle('text-(--color-text)', active);
+						b.setAttribute('aria-checked', String(active));
+					});
+				}
+
+				apply(current());
+
+				btns.forEach(function(b) {
+					b.addEventListener('click', function() {
+						var mode = b.dataset.theme;
+						if (mode === 'system') {
+							localStorage.removeItem('theme');
+						} else {
+							localStorage.setItem('theme', mode);
+						}
+						apply(mode);
+					});
+				});
+
+				matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+					if (current() === 'system') apply('system');
+				});
+			})();
+		</script>
+
+		<div aria-live="polite" aria-atomic="true" class="sr-only" id="search-announce"></div>
+
+		<script is:inline>
+			(function() {
+				var isMac = /Mac|iPhone|iPod|iPad/u.test(navigator.platform);
+				var shortcutEl = document.querySelector('#search-shortcut');
+				if (shortcutEl) shortcutEl.textContent = isMac ? '⌘K' : 'Ctrl K';
+			})();
+		</script>
+
+		<script is:inline>
+			(function() {
+				var btn = document.querySelector('#search-button');
+				var modal = document.querySelector('#search-modal');
+				var backdrop = document.querySelector('#search-backdrop');
+				var input = document.querySelector('#search-input');
+				var results = document.querySelector('#search-results');
+				var announce = document.querySelector('#search-announce');
+				var pagefind = null;
+
+				var isMac = /Mac|iPhone|iPod|iPad/u.test(navigator.platform);
+				var debounce;
+				var activeIndex = -1;
+
+				function esc(s) {
+					var d = document.createElement('div');
+					d.textContent = s;
+					return d.innerHTML;
+				}
+
+				async function loadPagefind() {
+					if (pagefind) return pagefind;
+					try {
+						pagefind = await import('/pagefind/pagefind.js');
+						await pagefind.init();
+					} catch(e) {
+						pagefind = null;
+					}
+					return pagefind;
+				}
+
+				function getOptions() {
+					return results.querySelectorAll('[role="option"]');
+				}
+
+				function setActive(index) {
+					var opts = getOptions();
+					opts.forEach(function(o) { o.classList.remove('bg-(--color-surface-alt)'); o.setAttribute('aria-selected', 'false'); });
+					activeIndex = index;
+					if (index >= 0 && index < opts.length) {
+						opts[index].classList.add('bg-(--color-surface-alt)');
+						opts[index].setAttribute('aria-selected', 'true');
+						input.setAttribute('aria-activedescendant', opts[index].id);
+						opts[index].scrollIntoView({ block: 'nearest' });
+					} else {
+						input.setAttribute('aria-activedescendant', '');
+					}
+				}
+
+				var modalPanel = document.querySelector('#search-panel');
+
+				function getFocusable() {
+					return modal.querySelectorAll('input, a[href], button, [tabindex]:not([tabindex="-1"])');
+				}
+
+				function openModal() {
+					modal.classList.remove('hidden');
+					modalPanel.setAttribute('role', 'dialog');
+					modalPanel.setAttribute('aria-modal', 'true');
+					modalPanel.setAttribute('aria-label', 'Search');
+					document.body.style.overflow = 'hidden';
+					input.focus();
+				}
+
+				function closeModal() {
+					modal.classList.add('hidden');
+					modalPanel.removeAttribute('role');
+					modalPanel.removeAttribute('aria-modal');
+					modalPanel.removeAttribute('aria-label');
+					document.body.style.overflow = '';
+					activeIndex = -1;
+					input.setAttribute('aria-activedescendant', '');
+					input.value = '';
+					results.innerHTML = '';
+					announce.textContent = '';
+					btn.focus();
+				}
+
+				btn.addEventListener('click', openModal);
+				backdrop.addEventListener('click', closeModal);
+
+				document.addEventListener('keydown', function(e) {
+					if (e.key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
+						e.preventDefault();
+						if (modal.classList.contains('hidden')) {
+							openModal();
+						} else {
+							closeModal();
+						}
+						return;
+					}
+
+					if (modal.classList.contains('hidden')) return;
+
+					if (e.key === 'Tab') {
+						var focusable = getFocusable();
+						if (focusable.length === 0) return;
+						var first = focusable[0];
+						var last = focusable.at(-1);
+						if (e.shiftKey) {
+							if (document.activeElement === first) {
+								e.preventDefault();
+								last.focus();
+							}
+						} else if (document.activeElement === last) {
+							e.preventDefault();
+							first.focus();
+						}
+					}
+				});
+
+				input.addEventListener('input', function() {
+					clearTimeout(debounce);
+					debounce = setTimeout(function() { search(input.value); }, 200);
+				});
+
+				input.addEventListener('keydown', function(e) {
+					if (e.key === 'Escape') {
+						e.preventDefault();
+						closeModal();
+						return;
+					}
+
+					var opts = getOptions();
+					if (opts.length === 0) return;
+
+					if (e.key === 'ArrowDown') {
+						e.preventDefault();
+						setActive(activeIndex < opts.length - 1 ? activeIndex + 1 : 0);
+					} else if (e.key === 'ArrowUp') {
+						e.preventDefault();
+						setActive(activeIndex > 0 ? activeIndex - 1 : opts.length - 1);
+					} else if (e.key === 'Enter' && activeIndex >= 0) {
+						e.preventDefault();
+						opts[activeIndex].click();
+					}
+				});
+
+				async function search(query) {
+					if (!query.trim()) {
+						results.innerHTML = '';
+						announce.textContent = '';
+						return;
+					}
+
+					var pf = await loadPagefind();
+					if (!pf) {
+						results.innerHTML = '<p class="px-5 py-10 text-center text-sm text-(--color-text-muted)">Search unavailable (run a build first).</p>';
+						return;
+					}
+					var res = await pf.search(query);
+					var items = await Promise.all(res.results.slice(0, 10).map(function(h) { return h.data(); }));
+
+					if (items.length === 0) {
+						results.innerHTML = '<p class="px-5 py-10 text-center text-sm text-(--color-text-muted)">No results found.</p>';
+						announce.textContent = 'No results found.';
+					} else {
+						results.innerHTML = items.map(function(item, i) {
+							var title = item.meta && item.meta.title ? item.meta.title : 'Untitled';
+							var labelMap = item.url.includes('/member/') ? ['Member', 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'] : item.url.includes('/thread/') ? ['Post', 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'] : ['Thread', 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'];
+							var sep = item.url.includes('?') ? '&' : '?';
+							var href = item.url + sep + 'q=' + encodeURIComponent(query);
+							return '<a href="' + href + '" id="search-opt-' + i + '" role="option" aria-selected="false" class="block rounded-lg px-4 py-3 text-sm hover:bg-(--color-surface-alt) transition-colors">' +
+								'<span class="inline-flex items-center gap-2"><span class="font-semibold text-(--color-text)">' + esc(title) + '</span>' +
+								'<span class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ' + labelMap[1] + '">' + labelMap[0] + '</span></span>' +
+								'<p class="text-xs text-(--color-text-muted) mt-0.5 line-clamp-2">' + item.excerpt + '</p>' +
+								'</a>';
+						}).join('');
+						announce.textContent = items.length + ' result' + (items.length === 1 ? '' : 's') + ' found.';
+					}
+
+					activeIndex = -1;
+				}
+			})();
+		</script>
+	</body>
+</html>

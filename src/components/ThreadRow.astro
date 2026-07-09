@@ -1,0 +1,44 @@
+---
+import { formatDate, threadSlug, memberSlug } from '../lib/format.ts';
+import type { MemberData } from '../lib/types.ts';
+import IconPushPin from '~icons/ph/push-pin-bold';
+import IconLock from '~icons/ph/lock-bold';
+
+interface Props {
+	id: string;
+	title: string;
+	startedBy: string;
+	createdDate: string;
+	responses: number;
+	views: number;
+	sticky: boolean;
+	closed: boolean;
+	member?: MemberData;
+}
+
+const { id, title, startedBy, createdDate, responses, views, sticky, closed, member } = Astro.props;
+---
+
+<tr id={id ? `thread-${id}` : undefined} class:list={[
+	'border-b border-(--color-border)',
+	{ 'bg-(--color-badge-sticky-bg)/10': sticky },
+]}>
+	<td class="px-2 py-2">
+		{sticky && <><IconPushPin class="mr-1 inline size-3.5 text-(--color-badge-sticky-text)" aria-hidden="true" /><span class="sr-only">Pinned:</span></>}
+		{closed && <><IconLock class="mr-1 inline size-3.5 text-(--color-badge-closed-text)" aria-hidden="true" /><span class="sr-only">Locked:</span></>}
+		{id ? (
+			<a href={`/thread/${threadSlug(id, title)}`} class="thread-trigger text-(--color-link) hover:underline" data-thread-id={id}>{title}</a>
+		) : (
+			title
+		)}
+	</td>
+	<td class="px-2 py-2">
+		{member
+			? <a href={`/member/${memberSlug(member.id, member.name)}`} class="member-trigger text-inherit no-underline hover:underline" data-member-name={startedBy}>{startedBy}</a>
+			: <span>{startedBy}</span>
+		}
+	</td>
+	<td class="whitespace-nowrap px-2 py-2 text-(--color-text-muted)"><time datetime={createdDate} title={createdDate}>{formatDate(createdDate)}</time></td>
+	<td class="px-2 py-2 text-right tabular-nums">{responses}</td>
+	<td class="px-2 py-2 text-right tabular-nums">{views.toLocaleString()}</td>
+</tr>

@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MemberPopup from '../components/MemberPopup.astro';
+import ThreadPopup from '../components/ThreadPopup.astro';
+import ThreadRow from '../components/ThreadRow.astro';
+import Pagination from '../components/Pagination.astro';
+import ScrollToMatch from '../components/ScrollToMatch.astro';
+import { getForums, getAllMembers, getThreadTeaser, type ThreadTeaser } from '../lib/data.ts';
+import { threadIdFromUrl } from '../lib/format.ts';
+import IconFolder from '~icons/ph/folder-bold';
+
+const PER_PAGE = 50;
+
+const forums = await getForums();
+const allMembers = await getAllMembers();
+const membersByName = new Map(allMembers.map((m) => [m.name, m]));
+const mainForum = forums.find((f) => f.isRoot) ?? forums[0];
+const subForums = forums.filter((f) => f !== mainForum && !f.isRoot);
+
+const allThreads = (mainForum?.threads ?? []).map((t) => ({
+	...t,
+	id: threadIdFromUrl(t.url),
+}));
+const totalPages = Math.max(1, Math.ceil(allThreads.length / PER_PAGE));
+const threads = allThreads.slice(0, PER_PAGE);
+
+const threadTeasers = new Map<string, ThreadTeaser>();
+await Promise.all(threads.map(async (t) => {
+	if (!t.id) return;
+	const teaser = await getThreadTeaser(t.id);
+	if (teaser) threadTeasers.set(t.id, teaser);
+}));
+---
+
+<Layout>
+	{subForums.length === 0 && threads.length === 0 ? (
+		<p class="text-(--color-text-muted)">No scraped data found. Run the scraper first.</p>
+	) : (<>
+		<h1 class="text-2xl font-bold mb-4">{mainForum?.name ?? 'Forum Archive'}</h1>
+		<table class="w-full border-collapse text-sm">
+			<caption class="sr-only">Forum threads</caption>
+			<thead>
+				<tr class="border-b-2 border-(--color-border) text-left text-(--color-text-muted)">
+					<th scope="col" class="w-1/2 px-2 py-2 font-semibold">Thread</th>
+					<th scope="col" class="px-2 py-2 font-semibold">Started by</th>
+					<th scope="col" class="px-2 py-2 font-semibold">Date</th>
+					<th scope="col" class="px-2 py-2 text-right font-semibold">Replies</th>
+					<th scope="col" class="px-2 py-2 text-right font-semibold">Views</th>
+				</tr>
+			</thead>
+			<tbody>
+				{subForums.map((forum) => (
+					<tr class="border-b border-(--color-border)">
+						<td class="px-2 py-2 font-bold" colspan="5">
+							<IconFolder class="mr-1 inline size-3.5 text-(--color-text-muted)" aria-hidden="true" />
+							<a href={`/forum/${forum.channelId}`} class="text-(--color-link) hover:underline">{forum.name}</a>
+							<span class="ml-2 text-xs font-normal text-(--color-text-muted)">{forum.threads.length} threads</span>
+						</td>
+					</tr>
+				))}
+				{threads.map((t) => (
+					<ThreadRow
+						id={t.id}
+						title={t.title}
+						startedBy={t.startedBy}
+						createdDate={t.createdDate}
+						responses={t.responses}
+						views={t.views}
+						sticky={t.sticky}
+						closed={t.closed}
+						member={membersByName.get(t.startedBy)}
+					/>
+				))}
+			</tbody>
+		</table>
+
+		{mainForum && totalPages > 1 && (
+			<Pagination currentPage={1} totalPages={totalPages} baseUrl={`/forum/${mainForum.channelId}`} />
+		)}
+
+		<MemberPopup members={membersByName} />
+		<ThreadPopup threads={threadTeasers} />
+	</>)}
+</Layout>
+
+<ScrollToMatch selector='tr[id^="thread-"]' />

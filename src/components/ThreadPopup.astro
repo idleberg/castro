@@ -1,0 +1,78 @@
+---
+import type { ThreadTeaser } from '../lib/data.ts';
+interface Props {
+	threads: Map<string, ThreadTeaser>;
+}
+
+const { threads } = Astro.props;
+
+const threadsJson = JSON.stringify(Object.fromEntries(threads));
+---
+
+<div id="thread-popup" class="fixed z-50 hidden rounded-lg border border-(--color-border) bg-(--color-surface) p-4 shadow-xl max-w-sm" role="tooltip">
+	<div id="thread-popup-content"></div>
+</div>
+
+<script is:inline define:vars={{ threadsJson }}>
+	var threads = JSON.parse(threadsJson);
+	var popup = document.querySelector('#thread-popup');
+	var content = document.querySelector('#thread-popup-content');
+	var pp = window.__popup;
+	var timers = pp.createTimers();
+
+	function esc(s) {
+		var d = document.createElement('div');
+		d.textContent = s;
+		return d.innerHTML;
+	}
+
+	function render(id) {
+		var t = threads[id];
+		if (!t) return false;
+
+		content.innerHTML =
+			'<p style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:0.25rem">' +
+			esc(t.author) + ' · ' + esc(String(t.postCount)) + ' posts</p>' +
+			'<p style="font-size:0.875rem;line-height:1.4">' + esc(t.excerpt) + '</p>';
+		return true;
+	}
+
+	function show(id, cx, cy) {
+		if (!render(id)) return;
+		pp.position(popup, cx, cy);
+	}
+
+	function showFromElement(id, el) {
+		if (!render(id)) return;
+		pp.positionFromElement(popup, el);
+	}
+
+	function hide() {
+		popup.classList.add('hidden');
+	}
+
+	document.querySelectorAll('.thread-trigger').forEach(function(el) {
+		var id = el.dataset.threadId;
+		el.setAttribute('aria-describedby', 'thread-popup');
+
+		el.addEventListener('mouseenter', function(e) {
+			var cx = e.clientX, cy = e.clientY;
+			timers.scheduleShow(function() { show(id, cx, cy); });
+		});
+		el.addEventListener('mouseleave', function() { timers.scheduleHide(hide); });
+
+		el.addEventListener('focus', function() {
+			timers.scheduleShow(function() { showFromElement(id, el); });
+		});
+		el.addEventListener('blur', function() { timers.scheduleHide(hide); });
+	});
+
+	popup.addEventListener('mouseenter', function() { timers.cancelHide(); });
+	popup.addEventListener('mouseleave', function() { timers.scheduleHide(hide); });
+
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape' && !popup.classList.contains('hidden')) {
+			hide();
+		}
+	});
+</script>

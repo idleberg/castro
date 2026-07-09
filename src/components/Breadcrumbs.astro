@@ -1,0 +1,31 @@
+---
+import type { Breadcrumb } from '../lib/data.ts';
+import IconHouse from '~icons/ph/house-bold';
+
+interface Props {
+	items: Breadcrumb[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+	<nav aria-label="Breadcrumb" class="sticky top-0 z-40 -mx-4 border-b border-(--color-border) bg-(--color-surface)/95 px-4 py-2 text-sm backdrop-blur-sm">
+		<ol class="flex flex-wrap items-center gap-1">
+			{items.map((item, i) => (
+				<li class="flex items-center gap-1">
+					{i > 0 && <span class="text-(--color-text-muted)" aria-hidden="true">/</span>}
+					{i === 0 ? (
+						<a href={item.href} class="text-(--color-link) hover:text-(--color-link-hover)" aria-label={item.label}>
+							<IconHouse class="size-4" aria-hidden="true" />
+						</a>
+					) : i < items.length - 1 ? (
+						<a href={item.href} class="text-(--color-link) hover:underline">{item.label}</a>
+					) : (
+						<span class="text-(--color-text-muted) truncate max-w-xs" aria-current="page">{item.label}</span>
+					)}
+				</li>
+			))}
+		</ol>
+	</nav>
+)}

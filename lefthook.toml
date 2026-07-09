@@ -1,0 +1,7 @@
+[pre-commit.commands.lint]
+run = "pnpm exec oxlint --fix {staged_files}"
+stage_fixed = true
+
+[pre-commit.commands.format]
+run = "pnpm exec oxfmt --write {staged_files}"
+stage_fixed = true

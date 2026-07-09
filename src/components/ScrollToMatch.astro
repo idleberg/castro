@@ -1,0 +1,25 @@
+---
+interface Props {
+	selector: string;
+}
+
+const { selector } = Astro.props;
+---
+
+<script is:inline define:vars={{ selector }}>
+	(function() {
+		var query = new URLSearchParams(location.search).get('q');
+		if (!query) return;
+		var q = query.toLowerCase();
+		var els = document.querySelectorAll(selector);
+		for (var i = 0; i < els.length; i++) {
+			if (els[i].textContent.toLowerCase().includes(q)) {
+				els[i].style.outline = '2px solid var(--color-accent)';
+				els[i].style.outlineOffset = '-2px';
+				els[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+				history.replaceState(null, '', location.pathname + '#' + els[i].id);
+				break;
+			}
+		}
+	})();
+</script>

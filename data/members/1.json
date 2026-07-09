@@ -1,0 +1,10 @@
+{
+	"url": "/member/1",
+	"id": 1,
+	"name": "Odysseus",
+	"title": "King of Ithaca",
+	"joinDate": "2001-01-08T14:22:00.000Z",
+	"lastActivity": "2001-02-18T23:40:00.000Z",
+	"totalPosts": 8,
+	"location": "Ithaca"
+}

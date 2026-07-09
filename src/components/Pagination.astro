@@ -1,0 +1,67 @@
+---
+interface Props {
+	currentPage: number;
+	totalPages: number;
+	baseUrl: string;
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props;
+
+function pageUrl(page: number): string {
+	return page === 1 ? baseUrl : `${baseUrl}/page/${page}`;
+}
+
+function pageRange(current: number, total: number): (number | '...')[] {
+	const maxVisible = 15;
+	if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i + 1);
+
+	const pages: (number | '...')[] = [1];
+	const wing = Math.floor((maxVisible - 4) / 2);
+	let start = Math.max(2, current - wing);
+	let end = Math.min(total - 1, current + wing);
+
+	if (start <= 3) {
+		start = 2;
+		end = Math.min(total - 1, maxVisible - 2);
+	} else if (end >= total - 2) {
+		end = total - 1;
+		start = Math.max(2, total - maxVisible + 3);
+	}
+
+	if (start > 2) pages.push('...');
+	for (let i = start; i <= end; i++) pages.push(i);
+	if (end < total - 1) pages.push('...');
+	pages.push(total);
+	return pages;
+}
+
+const pages = pageRange(currentPage, totalPages);
+---
+
+{totalPages > 1 && (
+	<nav aria-label="Pagination" class="sticky bottom-0 z-40 -mx-4 mt-6 flex w-auto items-center justify-between border-t border-(--color-border) bg-(--color-surface)/95 px-4 py-2 text-sm backdrop-blur-sm">
+		{currentPage > 1 ? (
+			<a href={pageUrl(currentPage - 1)} class="rounded px-2 py-1 text-(--color-link) hover:bg-(--color-surface-alt)">&laquo; Prev</a>
+		) : (
+			<span class="rounded px-2 py-1 text-(--color-text-muted)" aria-disabled="true">&laquo; Prev</span>
+		)}
+
+		<div class="flex flex-wrap items-center justify-center gap-1">
+			{pages.map((p) =>
+				p === '...' ? (
+					<span class="px-1 text-(--color-text-muted)">&hellip;</span>
+				) : p === currentPage ? (
+					<span class="rounded bg-(--color-accent) px-2.5 py-1 font-semibold text-white" aria-current="page">{p}</span>
+				) : (
+					<a href={pageUrl(p)} class="rounded px-2.5 py-1 text-(--color-link) hover:bg-(--color-surface-alt)">{p}</a>
+				)
+			)}
+		</div>
+
+		{currentPage < totalPages ? (
+			<a href={pageUrl(currentPage + 1)} class="rounded px-2 py-1 text-(--color-link) hover:bg-(--color-surface-alt)">Next &raquo;</a>
+		) : (
+			<span class="rounded px-2 py-1 text-(--color-text-muted)" aria-disabled="true">Next &raquo;</span>
+		)}
+	</nav>
+)}

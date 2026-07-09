@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--color-surface: #ffffff;
+	--color-surface-alt: #f3f4f6;
+	--color-surface-hover: #e5e7eb;
+	--color-text: #111827;
+	--color-text-muted: #595f69;
+	--color-border: #e5e7eb;
+	--color-accent: #7c3aed;
+	--color-accent-hover: #6d28d9;
+	--color-link: #2563eb;
+	--color-code-bg: #f3f4f6;
+	--color-badge-sticky-bg: #dcfce7;
+	--color-badge-sticky-text: #166534;
+	--color-badge-closed-bg: #fef3c7;
+	--color-badge-closed-text: #92400e;
+	--color-focus-ring: #7c3aed;
+}
+
+.dark {
+	--color-surface: #0f172a;
+	--color-surface-alt: #1e293b;
+	--color-surface-hover: #334155;
+	--color-text: #e2e8f0;
+	--color-text-muted: #94a3b8;
+	--color-border: #334155;
+	--color-accent: #a78bfa;
+	--color-accent-hover: #c4b5fd;
+	--color-link: #60a5fa;
+	--color-code-bg: #1e293b;
+	--color-badge-sticky-bg: #064e3b;
+	--color-badge-sticky-text: #a7f3d0;
+	--color-badge-closed-bg: #451a03;
+	--color-badge-closed-text: #fde68a;
+	--color-focus-ring: #a78bfa;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-focus-ring);
+	outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+	outline: none;
+}
+
+.theme-btn:focus-visible {
+	outline: none;
+	box-shadow: inset 0 0 0 2px var(--color-focus-ring);
+}

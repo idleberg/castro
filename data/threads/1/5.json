@@ -1,0 +1,57 @@
+{
+	"url": "/forum/the-agora/5-introduce-yourself",
+	"title": "Introduce yourself",
+	"totalPages": 1,
+	"posts": [
+		{
+			"id": 5000,
+			"title": "Introduce yourself",
+			"author": "Athena",
+			"authorId": 3,
+			"body": "Welcome to The Agora. I am Athena, goddess of wisdom, strategy, and crafts. I will be moderating this forum.<br><br>Before you post, a few ground rules:<br><ul><li>No smiting other members</li><li>Disputes settled by argument, not by combat (looking at you, Ares)</li><li>If you have a grudge that spans multiple generations, take it to the Off Topic board</li></ul>Use this thread to introduce yourself. State your name, your domain, and one thing you are currently working on.",
+			"created": "2001-01-05T10:00:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 5001,
+			"title": "",
+			"author": "Odysseus",
+			"authorId": 1,
+			"body": "Odysseus of Ithaca. King, sailor, strategist. Recently returned home after a long voyage that I may write about at some length later. Currently working on renovating the palace — it was in rough shape when I got back. Suitors really do a number on the furniture.<br><br>Good to be here. Always preferred a well-reasoned debate to a spear in the chest.",
+			"created": "2001-01-08T14:22:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 5002,
+			"title": "",
+			"author": "Achilles",
+			"authorId": 2,
+			"body": "Achilles. Son of Peleus and Thetis. Greatest warrior who ever lived. I don't really need an introduction but fine, rules are rules.<br><br>Currently not working on anything because I am dead. But I have strong opinions and a lot of time.",
+			"created": "2001-01-10T02:45:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 5003,
+			"title": "",
+			"author": "Virgil",
+			"authorId": 4,
+			"body": "Greetings. I am Publius Vergilius Maro — Virgil, if you prefer. Poet, formerly of Mantua. I reside in Limbo now, which is exactly as interesting as it sounds. I have served as a guide through the afterlife on occasion and I like to think I brought a certain calm to the experience.<br><br>I look forward to thoughtful discussion. There is precious little of it where I am.",
+			"created": "2001-02-05T11:00:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 5004,
+			"title": "",
+			"author": "Dante",
+			"authorId": 5,
+			"body": "My name is Dante Alighieri. I am a poet from Florence, currently in exile. Virgil can vouch for me — he was kind enough to guide me through some very difficult territory recently. I am still processing what I saw. I joined this forum because I have questions and I suspect some of the people here have answers, or at least experiences that might shed light on my own.<br><br>Also, Athena, does the no-smiting rule apply to the damned? Asking for future reference.",
+			"created": "2001-03-01T16:40:00.000Z",
+			"updated": "",
+			"attachments": []
+		}
+	]
+}
