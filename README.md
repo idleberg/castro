@@ -24,7 +24,7 @@ pnpm install
 
 ## Data
 
-Provide a `data/` folder scraped with [fidel](https://github.com/idleberg/fidel) and castro will pick it up.
+Provide a `data/` folder created with [fidel](https://github.com/idleberg/fidel), a scraping tool for the Winamp forum and possibly other vBulletin-based forums. Alternatively, provide data that conforms to the file-structure and [JSON Schema](https://github.com/idleberg/fidel/tree/v1/schemas).
 
 ## Configuration
 
