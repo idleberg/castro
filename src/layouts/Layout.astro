@@ -3,7 +3,7 @@ import '../styles/global.css';
 import IconSun from '~icons/ph/sun-bold';
 import IconMoon from '~icons/ph/moon-bold';
 import IconMonitor from '~icons/ph/monitor-bold';
-import { SITE_NAME } from 'astro:env/server';
+import { SITE_NAME, META_DESCRIPTION, META_KEYWORDS } from 'astro:env/server';
 import { routePath } from '../lib/format.ts';
 
 interface Props {
@@ -19,6 +19,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{title}</title>
+		{META_DESCRIPTION && <meta name="description" content={META_DESCRIPTION} />}
+		{META_KEYWORDS && <meta name="keywords" content={META_KEYWORDS} />}
     <link rel="icon" href={routePath('/favicon.svg')} />
 		<script is:inline>
 			window.__popup = (function() {

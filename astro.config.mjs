@@ -19,6 +19,16 @@ export default defineConfig({
 				access: 'public',
 				default: 'Forum Archive',
 			}),
+			META_DESCRIPTION: envField.string({
+				context: 'server',
+				access: 'public',
+				optional: true,
+			}),
+			META_KEYWORDS: envField.string({
+				context: 'server',
+				access: 'public',
+				optional: true,
+			}),
 		},
 	},
 	vite: {
