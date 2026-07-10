@@ -13,19 +13,19 @@ export function githubPages(): { site?: string; base?: string } {
 }
 
 interface SiteConfigOptions {
-	title?: string;
+	title: string;
 	description?: string;
 	keywords?: string[];
 }
 
-export function siteConfig({ title, description, keywords }: SiteConfigOptions = {}) {
+export function siteConfig({ title, description, keywords }: SiteConfigOptions) {
 	return {
 		env: {
 			schema: {
 				SITE_NAME: envField.string({
 					context: 'server',
 					access: 'public',
-					default: title ?? '⌘',
+					default: title,
 				}),
 				META_DESCRIPTION: envField.string({
 					context: 'server',

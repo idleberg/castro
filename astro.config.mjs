@@ -6,7 +6,9 @@ import { githubPages, siteConfig } from './.castro/config.ts';
 
 export default defineConfig({
 	...githubPages(),
-	...siteConfig(),
+	...siteConfig({
+		title: 'Forum Archive',
+	}),
 	vite: {
 		plugins: [
 			icons({
