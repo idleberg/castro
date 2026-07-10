@@ -88,7 +88,7 @@ await Promise.all(authorIds.map(async (id) => {
 							<ul class="space-y-0.5">
 								{post.attachments.map((att) => (
 									<li class="text-xs">
-										<a href={att.url ?? routePath(`/attachments/${att.id}`)} {...((att.url ?? '/').startsWith('/') ? { download: att.name } : { target: '_blank', rel: 'noopener' })} class="text-(--color-link) hover:underline">{att.name}</a>
+										<a href={att.url?.startsWith('/') ? routePath(att.url) : att.url ?? routePath(`/attachments/${att.id}`)} {...((att.url ?? '/').startsWith('/') ? { download: att.name } : { target: '_blank', rel: 'noopener' })} class="text-(--color-link) hover:underline">{att.name}</a>
 										{(att.size || att.views > 0) && (
 											<span class="text-(--color-text-muted) ml-1">({[att.size, att.views > 0 && `${att.views.toLocaleString()} views`].filter(Boolean).join(', ')})</span>
 										)}
