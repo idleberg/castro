@@ -1,27 +1,21 @@
+import type { AstroUserConfig, ViteUserConfig } from 'astro';
 import { envField } from 'astro/config';
+import tailwindcss from '@tailwindcss/vite';
 import { existsSync, symlinkSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
+import icons from 'unplugin-icons/vite';
 
-export function githubPages(): { site?: string; base?: string } {
-	if (!process.env.GITHUB_ACTIONS) return {};
-
-	const [owner, repo] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
-	const isUserRepo = repo === `${owner}.github.io`;
-
-	return {
-		site: `https://${owner}.github.io`,
-		...(!isUserRepo && { base: `/${repo}` }),
-	};
-}
-
-interface SiteConfigOptions {
+interface CastroConfig {
 	title: string;
 	description?: string;
 	keywords?: string[];
+	githubPages?: boolean;
+	vite?: ViteUserConfig;
 }
 
-export function siteConfig({ title, description, keywords }: SiteConfigOptions) {
+export function defineConfig({ title, description, keywords, githubPages, vite }: CastroConfig): AstroUserConfig {
 	return {
+		...(githubPages ? resolveGithubPages() : {}),
 		env: {
 			schema: {
 				SITE_NAME: envField.string({
@@ -41,10 +35,26 @@ export function siteConfig({ title, description, keywords }: SiteConfigOptions) 
 				}),
 			},
 		},
+		vite: {
+			...vite,
+			plugins: [icons({ compiler: 'astro' }), tailwindcss(), ...(vite?.plugins ?? []), dataSymlinks()],
+		},
 	};
 }
 
-export function dataSymlinks(): { name: string; configResolved: (config: { root: string }) => void } {
+function resolveGithubPages(): { site?: string; base?: string } {
+	if (!process.env.GITHUB_ACTIONS) return {};
+
+	const [owner, repo] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
+	const isUserRepo = repo === `${owner}.github.io`;
+
+	return {
+		site: `https://${owner}.github.io`,
+		...(!isUserRepo && { base: `/${repo}` }),
+	};
+}
+
+function dataSymlinks(): { name: string; configResolved: (config: { root: string }) => void } {
 	return {
 		name: 'castro:data-symlinks',
 		configResolved(config) {
