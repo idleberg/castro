@@ -55,7 +55,7 @@ pnpm preview    # preview the build locally
 
 ## Deployment
 
-The included `githubPages()` helper auto-configures `site` and `base` when running in GitHub Actions. For [deployment services](https://docs.astro.build/en/guides/deploy/), set these in `astro.config.mjs` directly.
+The included `githubPages()` helper auto-configures `site` and `base` when running in GitHub Actions. For [other platforms](https://docs.astro.build/en/guides/deploy/), set these in `astro.config.mjs` directly.
 
 ## License
 
