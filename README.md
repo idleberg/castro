@@ -45,6 +45,9 @@ export default defineConfig({
 });
 ```
 
+> [!TIP]
+> The example uses GitHub Pages, but Astro supports many [deployment services](https://docs.astro.build/en/guides/deploy/).
+
 ## Development
 
 ```sh
