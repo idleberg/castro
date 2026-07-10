@@ -24,10 +24,7 @@ pnpm install
 
 ## Data
 
-Place your forum data as JSON files in the `data/` directory:
-
-> [!NOTE]
-> The JSON schemas as not yet finalized, so lets skip over this section.
+Provide a `data/` folder scraped with [fidel](https://github.com/idleberg/fidel) and castro will pick it up.
 
 ## Configuration
 
