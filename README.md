@@ -5,7 +5,7 @@
 
 A static forum archive viewer built with [Astro](https://astro.build). Point it at a folder of JSON data and it generates a browsable, searchable archive of forums, threads, and member profiles.
 
-[Example Forum](https://idleberg.github.io/castro/)
+🌈 [Example Forum](https://idleberg.github.io/castro/)
 
 ## Prerequisites
 
