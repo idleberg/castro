@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # forum data
 data/cache/
+
+# generated symlinks
+public/attachments
