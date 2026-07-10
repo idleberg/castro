@@ -45,9 +45,6 @@ export default defineConfig({
 });
 ```
 
-> [!TIP]
-> The example uses GitHub Pages, but Astro supports many [deployment services](https://docs.astro.build/en/guides/deploy/).
-
 ## Development
 
 ```sh
@@ -58,7 +55,7 @@ pnpm preview    # preview the build locally
 
 ## Deployment
 
-The included `githubPages()` helper auto-configures `site` and `base` when running in GitHub Actions. For other platforms, set these in `astro.config.mjs` directly.
+The included `githubPages()` helper auto-configures `site` and `base` when running in GitHub Actions. For [deployment services](https://docs.astro.build/en/guides/deploy/), set these in `astro.config.mjs` directly.
 
 ## License
 
