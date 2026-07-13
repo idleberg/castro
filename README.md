@@ -32,13 +32,15 @@ Edit `astro.config.mjs` to set your site title and optional meta tags:
 
 ```js
 export default defineConfig({
-	...githubPages(),
-	...siteConfig({
-		title: 'My Forum Archive',
-		description: 'An archive of the old forum',
-		keywords: ['forum', 'archive'],
-	}),
-	// ...
+	integrations: [
+		castro({
+			title: 'My Forum Archive',
+			description: 'An archive of the old forum',
+			keywords: ['forum', 'archive'],
+			githubPages: true,
+		}),
+		// Your custom Astro config
+	],
 });
 ```
 
