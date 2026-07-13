@@ -1,9 +1,10 @@
-import type { AstroUserConfig, ViteUserConfig } from 'astro';
 import { envField } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite';
 import { existsSync, symlinkSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import icons from 'unplugin-icons/vite';
+import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
+import type { AstroUserConfig, ViteUserConfig } from 'astro';
 
 interface CastroConfig {
 	title: string;
@@ -35,6 +36,7 @@ export function defineConfig({ title, description, keywords, githubPages, vite }
 				}),
 			},
 		},
+		integrations: [sitemap()],
 		vite: {
 			...vite,
 			plugins: [icons({ compiler: 'astro' }), tailwindcss(), ...(vite?.plugins ?? []), dataSymlinks()],
