@@ -11,7 +11,7 @@ interface CastroConfig {
 	description?: string;
 	keywords?: string[];
 	githubPages?: boolean;
-	integration: AstroIntegration[];
+	integration?: AstroIntegration[];
 	vite?: ViteUserConfig;
 }
 
