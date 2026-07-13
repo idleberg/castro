@@ -1,7 +1,14 @@
 // @ts-check
-import { defineConfig } from './.castro/config.ts';
+import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+import castro from './.castro/integration.ts';
 
 export default defineConfig({
-	title: 'Forum Archive',
-	githubPages: true,
+	integrations: [
+		castro({
+			title: 'Forum Archive',
+			githubPages: true,
+		}),
+		sitemap(),
+	],
 });
