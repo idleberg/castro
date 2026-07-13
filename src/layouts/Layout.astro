@@ -22,7 +22,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
     {META_DESCRIPTION && <meta name="description" content={META_DESCRIPTION} />}
     {META_KEYWORDS && <meta name="keywords" content={META_KEYWORDS} />}
     <link rel="icon" href={routePath("/favicon.svg")} />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href={`${import.meta.env.BASE_URL}/sitemap-index.xml`} />
     <script is:inline>
       window.__popup = (function () {
         var PAD = 8;
