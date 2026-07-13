@@ -4,17 +4,25 @@ import { relative, resolve } from 'node:path';
 import icons from 'unplugin-icons/vite';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
-import type { AstroUserConfig, ViteUserConfig } from 'astro';
+import type { AstroIntegration, AstroUserConfig, ViteUserConfig } from 'astro';
 
 interface CastroConfig {
 	title: string;
 	description?: string;
 	keywords?: string[];
 	githubPages?: boolean;
+	integration: AstroIntegration[];
 	vite?: ViteUserConfig;
 }
 
-export function defineConfig({ title, description, keywords, githubPages, vite }: CastroConfig): AstroUserConfig {
+export function defineConfig({
+	title,
+	description,
+	keywords,
+	githubPages,
+	integration,
+	vite,
+}: CastroConfig): AstroUserConfig {
 	return {
 		...(githubPages ? resolveGithubPages() : {}),
 		env: {
@@ -36,7 +44,7 @@ export function defineConfig({ title, description, keywords, githubPages, vite }
 				}),
 			},
 		},
-		integrations: [sitemap()],
+		integrations: [...(integration ?? []), sitemap()],
 		vite: {
 			...vite,
 			plugins: [icons({ compiler: 'astro' }), tailwindcss(), ...(vite?.plugins ?? []), dataSymlinks()],
