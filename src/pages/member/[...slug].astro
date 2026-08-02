@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { getAllMembers, getMember, getThreadsForMember } from '../../lib/data.ts';
+import { getAllMembers, getMember, getThreadsForMember, type Breadcrumb } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
 import { formatDate, slugify, routePath } from '../../lib/format.ts';
 import { avatar } from '../../lib/avatar.ts';
@@ -25,13 +25,15 @@ const info = [
 	member.totalPosts && ['Posts', member.totalPosts.toLocaleString()],
 	member.location && ['Location', member.location],
 ].filter(Boolean) as [string, string, string?][];
+
+const crumbs: Breadcrumb[] = [
+	{ label: SITE_NAME, href: routePath('/') },
+	{ label: member.name, href: routePath(`/member/${memberId}/${slugify(member.name)}`) },
+];
 ---
 
 <Layout title={`${member.name} — ${SITE_NAME}`}>
-	<Breadcrumbs items={[
-		{ label: SITE_NAME, href: routePath('/') },
-		{ label: member.name, href: routePath(`/member/${memberId}/${slugify(member.name)}`) },
-	]} />
+	<Breadcrumbs items={crumbs} />
 
 	<div class="mt-4 flex items-center gap-4 mb-6">
 		<span class="inline-block size-16 rounded-full overflow-hidden ring-1 ring-(--color-border)" aria-hidden="true" set:html={avatar(member.name)} />
