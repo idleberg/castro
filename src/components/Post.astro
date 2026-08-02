@@ -22,10 +22,10 @@ const { post } = Astro.props;
 			{post.author}
 		</a>
 		<time datetime={post.created} title={post.created} class="text-xs text-(--color-text-muted)">{formatDateTime(post.created)}</time>
-			<a href={`#post-${post.id}`} class="ml-auto text-xs text-(--color-text-muted) hover:text-(--color-link) no-underline" aria-label={`Link to post ${post.id}`}>#</a>
 		{post.updated && (
 			<span class="text-xs italic text-(--color-text-muted)">edited <time datetime={post.updated} title={post.updated}>{formatDateTime(post.updated)}</time></span>
 		)}
+		<a href={`#post-${post.id}`} class="ml-auto text-xs text-(--color-text-muted) hover:text-(--color-link) no-underline" aria-label={`Link to post ${post.id}`}>#</a>
 	</header>
 
 	{post.title && <h2 class="mb-2 text-base font-semibold">{post.title}</h2>}
