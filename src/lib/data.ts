@@ -1,8 +1,8 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { ForumData, ThreadData, MemberData } from './types.ts';
+import type { ForumData, ThreadData, ThreadRef, MemberData } from './types.ts';
 export type { MemberData } from './types.ts';
-import { threadSlug } from './format.ts';
+import { threadIdFromUrl, threadSlug } from './format.ts';
 
 const DATA_ROOT = join(process.cwd(), 'data');
 
@@ -133,6 +133,17 @@ export async function getForum(channelId: number): Promise<ForumData | undefined
 	return forums.find((f) => f.channelId === channelId);
 }
 
+export async function getRootForum(): Promise<ForumData | undefined> {
+	const forums = await loadForums();
+	return forums.find((f) => f.isRoot) ?? forums[0];
+}
+
+export async function getSubForums(): Promise<ForumData[]> {
+	const forums = await loadForums();
+	const root = await getRootForum();
+	return forums.filter((f) => f !== root);
+}
+
 export async function getThread(id: string): Promise<ThreadData | undefined> {
 	const threads = await loadAllThreads();
 	return threads.get(id);
@@ -193,10 +204,18 @@ export async function getThreadsForMember(memberName: string): Promise<{ id: str
 
 export interface Breadcrumb {
 	label: string;
-	href: string;
+	href?: string;
 }
 
 export async function getForumForThread(threadId: string): Promise<{ name: string; channelId: number } | undefined> {
 	const map = await loadThreadToForum();
 	return map.get(threadId);
+}
+
+/** The thread's entry in its forum listing, which carries the sticky/closed flags. */
+export async function getThreadRef(threadId: string): Promise<ThreadRef | undefined> {
+	const parent = await getForumForThread(threadId);
+	if (!parent) return undefined;
+	const forum = await getForum(parent.channelId);
+	return forum?.threads.find((t) => threadIdFromUrl(t.url) === threadId);
 }

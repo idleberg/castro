@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ForumListing from '../../components/ForumListing.astro';
+import ScrollToMatch from '../../components/ScrollToMatch.astro';
+import { getRootForum } from '../../lib/data.ts';
+import { FORUM_PER_PAGE } from '../../lib/constants.ts';
+import { routePath } from '../../lib/format.ts';
+import { SITE_NAME } from 'astro:env/server';
+
+export async function getStaticPaths() {
+	const root = await getRootForum();
+	if (!root) return [];
+	const totalPages = Math.max(1, Math.ceil(root.threads.length / FORUM_PER_PAGE));
+
+	// Page 1 lives at `/`
+	return Array.from({ length: totalPages - 1 }, (_, i) => ({
+		params: { page: String(i + 2) },
+		props: { page: i + 2, totalPages },
+	}));
+}
+
+const { page, totalPages } = Astro.props;
+const rootForum = await getRootForum();
+if (!rootForum) return Astro.redirect(routePath('/'));
+---
+
+<Layout title={`${rootForum.name} — page ${page} — ${SITE_NAME}`} indexable={false}>
+	<ForumListing
+		forum={rootForum}
+		page={page}
+		totalPages={totalPages}
+		baseUrl={routePath('')}
+	/>
+</Layout>
+
+<ScrollToMatch selector='tr[id^="thread-"]' />

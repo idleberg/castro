@@ -4,11 +4,13 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import MemberPopup from '../../components/MemberPopup.astro';
 import Pagination from '../../components/Pagination.astro';
 import ScrollToMatch from '../../components/ScrollToMatch.astro';
-import { getThread, getAllThreadIds, getMember, getForumForThread, type Breadcrumb, type MemberData } from '../../lib/data.ts';
+import { getThread, getAllThreadIds, getMember, getForumForThread, getRootForum, getThreadRef, type Breadcrumb, type MemberData } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
 import { formatDateTime, threadSlug, memberSlug, routePath } from '../../lib/format.ts';
 import { sanitizeHtml } from '../../lib/sanitize.ts';
 import { avatar } from '../../lib/avatar.ts';
+import IconPushPin from '~icons/ph/push-pin-bold';
+import IconLock from '~icons/ph/lock-bold';
 
 const PER_PAGE = 30;
 
@@ -34,14 +36,15 @@ const { threadId, page, totalPages, threadSlug: tSlug } = Astro.props;
 const thread = await getThread(threadId);
 if (!thread) return Astro.redirect(routePath('/'));
 const parentForum = await getForumForThread(threadId);
+const rootForum = await getRootForum();
+const threadRef = await getThreadRef(threadId);
 
-const crumbs: Breadcrumb[] = [
-	{ label: SITE_NAME, href: routePath('/') },
-];
-if (parentForum) {
+// The root forum is the first crumb of every trail, so only subforums are added here
+const crumbs: Breadcrumb[] = [];
+if (parentForum && parentForum.channelId !== rootForum?.channelId) {
 	crumbs.push({ label: parentForum.name, href: routePath(`/forum/${parentForum.channelId}`) });
 }
-crumbs.push({ label: thread.title, href: routePath(`/thread/${tSlug}`) });
+crumbs.push({ label: thread.title });
 
 const posts = thread.posts.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -54,9 +57,13 @@ await Promise.all(authorIds.map(async (id) => {
 ---
 
 <Layout title={`${thread.title} — ${SITE_NAME}`}>
-	<Breadcrumbs items={crumbs} />
+	<Breadcrumbs trail={crumbs} />
 
-	<h1 class="text-2xl font-bold mb-1 mt-4">{thread.title}</h1>
+	<h1 class="text-2xl font-bold mb-1 mt-4">
+		{threadRef?.sticky && <><IconPushPin class="mr-1 inline size-5 align-baseline text-(--color-badge-sticky-text)" aria-hidden="true" /><span class="sr-only">Pinned:</span></>}
+		{threadRef?.closed && <><IconLock class="mr-1 inline size-5 align-baseline text-(--color-badge-closed-text)" aria-hidden="true" /><span class="sr-only">Locked:</span></>}
+		{thread.title}
+	</h1>
 	<p class="text-(--color-text-muted) mb-6">{thread.posts.length} posts</p>
 
 	<div class="flex flex-col gap-4">

@@ -1,0 +1,82 @@
+---
+import MemberPopup from './MemberPopup.astro';
+import ThreadPopup from './ThreadPopup.astro';
+import ThreadRow from './ThreadRow.astro';
+import Pagination from './Pagination.astro';
+import { getAllMembers, getThreadTeaser, type ThreadTeaser, type MemberData } from '../lib/data.ts';
+import type { ForumData } from '../lib/types.ts';
+import { threadIdFromUrl, routePath } from '../lib/format.ts';
+import { FORUM_PER_PAGE } from '../lib/constants.ts';
+import IconFolder from '~icons/ph/folder-bold';
+
+interface Props {
+	forum: ForumData;
+	page: number;
+	totalPages: number;
+	baseUrl: string;
+	subForums?: ForumData[];
+}
+
+const { forum, page, totalPages, baseUrl, subForums = [] } = Astro.props;
+
+const allThreads = forum.threads.map((t) => ({ ...t, id: threadIdFromUrl(t.url) }));
+const threads = allThreads.slice((page - 1) * FORUM_PER_PAGE, page * FORUM_PER_PAGE);
+
+const allMembers = await getAllMembers();
+const allMembersByName = new Map(allMembers.map((m) => [m.name, m]));
+const membersByName = new Map(
+	threads.map((t) => [t.startedBy, allMembersByName.get(t.startedBy)]).filter(([, m]) => m) as [string, MemberData][],
+);
+
+const threadTeasers = new Map<string, ThreadTeaser>();
+await Promise.all(threads.map(async (t) => {
+	if (!t.id) return;
+	const teaser = await getThreadTeaser(t.id);
+	if (teaser) threadTeasers.set(t.id, teaser);
+}));
+---
+
+<h1 class="text-2xl font-bold mb-1 mt-4">{forum.name}</h1>
+<p class="text-(--color-text-muted) mb-4">{allThreads.length} threads</p>
+
+<table class="w-full border-collapse text-sm">
+	<caption class="sr-only">{forum.name} threads</caption>
+	<thead>
+		<tr class="border-b-2 border-(--color-border) text-left text-(--color-text-muted)">
+			<th scope="col" class="w-1/2 px-2 py-2 font-semibold">Thread</th>
+			<th scope="col" class="px-2 py-2 font-semibold">Started by</th>
+			<th scope="col" class="px-2 py-2 font-semibold">Date</th>
+			<th scope="col" class="px-2 py-2 text-right font-semibold">Replies</th>
+			<th scope="col" class="px-2 py-2 text-right font-semibold">Views</th>
+		</tr>
+	</thead>
+	<tbody>
+		{subForums.map((sub) => (
+			<tr class="border-b border-(--color-border)">
+				<td class="px-2 py-2 font-bold" colspan="5">
+					<IconFolder class="mr-1 inline size-3.5 text-(--color-text-muted)" aria-hidden="true" />
+					<a href={routePath(`/forum/${sub.channelId}`)} class="text-(--color-link) hover:underline">{sub.name}</a>
+					<span class="ml-2 text-xs font-normal text-(--color-text-muted)">{sub.threads.length} threads</span>
+				</td>
+			</tr>
+		))}
+		{threads.map((t) => (
+			<ThreadRow
+				id={t.id}
+				title={t.title}
+				startedBy={t.startedBy}
+				createdDate={t.createdDate}
+				responses={t.responses}
+				views={t.views}
+				sticky={t.sticky}
+				closed={t.closed}
+				member={membersByName.get(t.startedBy)}
+			/>
+		))}
+	</tbody>
+</table>
+
+<Pagination currentPage={page} totalPages={totalPages} baseUrl={baseUrl} />
+
+<MemberPopup members={membersByName} />
+<ThreadPopup threads={threadTeasers} />

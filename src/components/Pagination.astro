@@ -8,7 +8,8 @@ interface Props {
 const { currentPage, totalPages, baseUrl } = Astro.props;
 
 function pageUrl(page: number): string {
-	return page === 1 ? baseUrl : `${baseUrl}/page/${page}`;
+	// The root forum's baseUrl is '' (or the base path), which is not a usable href on its own
+	return page === 1 ? baseUrl || '/' : `${baseUrl}/page/${page}`;
 }
 
 function pageRange(current: number, total: number): (number | '...')[] {

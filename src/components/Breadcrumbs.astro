@@ -1,12 +1,17 @@
 ---
-import type { Breadcrumb } from '../lib/data.ts';
-import IconHouse from '~icons/ph/house-bold';
+import { getRootForum, type Breadcrumb } from '../lib/data.ts';
+import { routePath } from '../lib/format.ts';
 
 interface Props {
-	items: Breadcrumb[];
+	trail: Breadcrumb[];
 }
 
-const { items } = Astro.props;
+const { trail } = Astro.props;
+
+const root = await getRootForum();
+const items: Breadcrumb[] = root && trail.length > 0
+	? [{ label: root.name, href: routePath('/') }, ...trail]
+	: [];
 ---
 
 {items.length > 0 && (
@@ -15,11 +20,7 @@ const { items } = Astro.props;
 			{items.map((item, i) => (
 				<li class="flex items-center gap-1">
 					{i > 0 && <span class="text-(--color-text-muted)" aria-hidden="true">/</span>}
-					{i === 0 ? (
-						<a href={item.href} class="text-(--color-link) hover:text-(--color-link-hover)" aria-label={item.label}>
-							<IconHouse class="size-4" aria-hidden="true" />
-						</a>
-					) : i < items.length - 1 ? (
+					{i < items.length - 1 ? (
 						<a href={item.href} class="text-(--color-link) hover:underline">{item.label}</a>
 					) : (
 						<span class="text-(--color-text-muted) truncate max-w-xs" aria-current="page">{item.label}</span>

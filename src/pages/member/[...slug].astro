@@ -28,10 +28,7 @@ const info = [
 ---
 
 <Layout title={`${member.name} — ${SITE_NAME}`}>
-	<Breadcrumbs items={[
-		{ label: SITE_NAME, href: routePath('/') },
-		{ label: member.name, href: routePath(`/member/${memberId}/${slugify(member.name)}`) },
-	]} />
+	<Breadcrumbs trail={[{ label: member.name }]} />
 
 	<div class="mt-4 flex items-center gap-4 mb-6">
 		<span class="inline-block size-16 rounded-full overflow-hidden ring-1 ring-(--color-border)" aria-hidden="true" set:html={avatar(member.name)} />
