@@ -1,0 +1,47 @@
+{
+	"url": "/forum/the-underworld",
+	"name": "The Underworld",
+	"channelId": 2,
+	"totalPages": 1,
+	"threads": [
+		{
+			"url": "/forum/the-underworld/8-newcomers-read-this-before-you-cross",
+			"title": "Newcomers: read this before you cross",
+			"startedBy": "Virgil",
+			"createdDate": "2001-04-02T08:00:00.000Z",
+			"modifiedDate": "2001-04-19T17:05:00.000Z",
+			"nodeId": 8,
+			"responses": 3,
+			"views": 2280,
+			"sticky": true,
+			"closed": false,
+			"forumPage": 1
+		},
+		{
+			"url": "/forum/the-underworld/6-ferry-prices-have-gotten-insane",
+			"title": "Ferry prices have gotten insane",
+			"startedBy": "Dante",
+			"createdDate": "2001-04-06T13:25:00.000Z",
+			"modifiedDate": "2001-04-13T04:40:00.000Z",
+			"nodeId": 6,
+			"responses": 4,
+			"views": 2649,
+			"sticky": false,
+			"closed": true,
+			"forumPage": 1
+		},
+		{
+			"url": "/forum/the-underworld/7-cerberus-appreciation-thread",
+			"title": "Cerberus appreciation thread",
+			"startedBy": "Odysseus",
+			"createdDate": "2001-04-14T19:50:00.000Z",
+			"modifiedDate": "2001-04-22T10:35:00.000Z",
+			"nodeId": 7,
+			"responses": 3,
+			"views": 3967,
+			"sticky": false,
+			"closed": false,
+			"forumPage": 1
+		}
+	]
+}
