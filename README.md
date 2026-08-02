@@ -3,7 +3,7 @@
 > [!NOTE]
 > This project is work in progress. Expect breaking changes.
 
-A static forum archive viewer built with [Astro](https://astro.build). Point it at a folder of JSON data and it generates a browsable, searchable archive of forums, threads, and member profiles.
+A static forum archive viewer built with [Astro](https://astro.build). Point it at a folder of JSON data and it generates a browseable, searchable archive of forums, threads, and member profiles.
 
 🌈 [Example Forum](https://idleberg.github.io/castro/)
 
