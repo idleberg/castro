@@ -1,8 +1,7 @@
 ---
 import { formatDate, threadSlug, memberSlug, routePath } from '../lib/format.ts';
 import type { MemberData } from '../lib/types.ts';
-import IconPushPin from '~icons/ph/push-pin-bold';
-import IconLock from '~icons/ph/lock-bold';
+import ThreadFlags from './ThreadFlags.astro';
 
 interface Props {
 	id: string;
@@ -24,8 +23,7 @@ const { id, title, startedBy, createdDate, responses, views, sticky, closed, mem
 	{ 'bg-(--color-badge-sticky-bg)/10': sticky },
 ]}>
 	<td class="px-2 py-2">
-		{sticky && <><IconPushPin class="mr-1 inline size-3.5 text-(--color-badge-sticky-text)" aria-hidden="true" /><span class="sr-only">Pinned:</span></>}
-		{closed && <><IconLock class="mr-1 inline size-3.5 text-(--color-badge-closed-text)" aria-hidden="true" /><span class="sr-only">Locked:</span></>}
+		<ThreadFlags sticky={sticky} closed={closed} />
 		{id ? (
 			<a href={routePath(`/thread/${threadSlug(id, title)}`)} class="thread-trigger text-(--color-link) hover:underline" data-thread-id={id}>{title}</a>
 		) : (

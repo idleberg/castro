@@ -1,0 +1,26 @@
+---
+import IconPushPin from '~icons/ph/push-pin-bold';
+import IconLock from '~icons/ph/lock-bold';
+
+interface Props {
+	sticky?: boolean;
+	closed?: boolean;
+	/** Extra icon classes, so the icons can match the surrounding type */
+	iconClass?: string;
+}
+
+const { sticky = false, closed = false, iconClass = 'size-3.5' } = Astro.props;
+---
+
+{sticky && (
+	<>
+		<IconPushPin class:list={['mr-1 inline text-(--color-badge-sticky-text)', iconClass]} aria-hidden="true" />
+		<span class="sr-only">Pinned:</span>
+	</>
+)}
+{closed && (
+	<>
+		<IconLock class:list={['mr-1 inline text-(--color-badge-closed-text)', iconClass]} aria-hidden="true" />
+		<span class="sr-only">Locked:</span>
+	</>
+)}
