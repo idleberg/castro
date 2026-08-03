@@ -37,17 +37,24 @@ function pageRange(current: number, total: number): (number | '...')[] {
 }
 
 const pages = pageRange(currentPage, totalPages);
+
+// Prev/Next keep a 44px touch target on phones, but stay compact on desktop
+const step =
+	'flex items-center rounded px-2 py-1 max-sm:min-h-11 max-sm:min-w-11 max-sm:justify-center max-sm:border max-sm:border-(--color-border) max-sm:text-base';
 ---
 
 {totalPages > 1 && (
-	<nav aria-label="Pagination" class="sticky bottom-0 z-40 -mx-4 mt-6 flex w-auto items-center justify-between bg-(--color-surface)/95 px-4 py-2 text-sm backdrop-blur-sm">
+	<nav aria-label="Pagination" class="sticky bottom-0 z-40 -mx-4 mt-6 flex w-auto items-center justify-between gap-2 bg-(--color-surface)/95 px-4 py-2 text-sm backdrop-blur-sm">
 		{currentPage > 1 ? (
-			<a href={pageUrl(currentPage - 1)} class="rounded px-2 py-1 text-(--color-link) hover:bg-(--color-surface-alt)">&laquo; Prev</a>
+			<a href={pageUrl(currentPage - 1)} class={`${step} text-(--color-link) hover:bg-(--color-surface-alt)`} aria-label="Previous page">&laquo;<span class="hidden sm:inline">&nbsp;Prev</span></a>
 		) : (
-			<span class="rounded px-2 py-1 text-(--color-text-muted)" aria-disabled="true">&laquo; Prev</span>
+			<span class={`${step} text-(--color-text-muted)`} aria-disabled="true" aria-label="Previous page">&laquo;<span class="hidden sm:inline">&nbsp;Prev</span></span>
 		)}
 
-		<div class="flex flex-wrap items-center justify-center gap-1">
+		{/* Numbered links need too much room on a phone, so they collapse to a counter */}
+		<span class="text-(--color-text-muted) tabular-nums sm:hidden">Page {currentPage} of {totalPages}</span>
+
+		<div class="hidden items-center justify-center gap-1 sm:flex">
 			{pages.map((p) =>
 				p === '...' ? (
 					<span class="px-1 text-(--color-text-muted)">&hellip;</span>
@@ -60,9 +67,9 @@ const pages = pageRange(currentPage, totalPages);
 		</div>
 
 		{currentPage < totalPages ? (
-			<a href={pageUrl(currentPage + 1)} class="rounded px-2 py-1 text-(--color-link) hover:bg-(--color-surface-alt)">Next &raquo;</a>
+			<a href={pageUrl(currentPage + 1)} class={`${step} text-(--color-link) hover:bg-(--color-surface-alt)`} aria-label="Next page"><span class="hidden sm:inline">Next&nbsp;</span>&raquo;</a>
 		) : (
-			<span class="rounded px-2 py-1 text-(--color-text-muted)" aria-disabled="true">Next &raquo;</span>
+			<span class={`${step} text-(--color-text-muted)`} aria-disabled="true" aria-label="Next page"><span class="hidden sm:inline">Next&nbsp;</span>&raquo;</span>
 		)}
 	</nav>
 )}
