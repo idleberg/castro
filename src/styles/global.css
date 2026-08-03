@@ -48,6 +48,14 @@
 	outline: none;
 }
 
+/* Post or thread row singled out by the URL hash, or matched by ScrollToMatch */
+.is-match,
+article[id^='post-']:target,
+tr[id^='thread-']:target {
+	outline: 2px solid var(--color-accent);
+	outline-offset: -2px;
+}
+
 .theme-btn:focus-visible {
 	outline: none;
 	box-shadow: inset 0 0 0 2px var(--color-focus-ring);
