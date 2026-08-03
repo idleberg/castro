@@ -16,13 +16,19 @@ interface Props {
 }
 
 const { id, title, startedBy, createdDate, responses, views, sticky, closed, member } = Astro.props;
+
+// Below `sm` the row stacks: the title gets its own line, the remaining cells run
+// inline as a muted meta line separated by middots
+const meta = 'inline text-xs text-(--color-text-muted) sm:table-cell sm:px-2 sm:py-2 sm:text-sm';
+const separated = "before:px-1.5 before:content-['·'] sm:before:content-none";
+const unmuted = 'sm:text-(--color-text)';
 ---
 
 <tr id={id ? `thread-${id}` : undefined} class:list={[
-	'border-b border-(--color-border)',
+	'block border-b border-(--color-border) px-2 py-3 sm:table-row sm:p-0',
 	{ 'bg-(--color-badge-sticky-bg)/10': sticky },
 ]}>
-	<td class="px-2 py-2">
+	<td class="block sm:table-cell sm:px-2 sm:py-2">
 		<ThreadFlags sticky={sticky} closed={closed} />
 		{id ? (
 			<a href={routePath(`/thread/${threadSlug(id, title)}`)} class="thread-trigger text-(--color-link) hover:underline" data-thread-id={id}>{title}</a>
@@ -30,13 +36,13 @@ const { id, title, startedBy, createdDate, responses, views, sticky, closed, mem
 			title
 		)}
 	</td>
-	<td class="px-2 py-2">
+	<td class={`${meta} ${unmuted}`}>
 		{member
 			? <a href={routePath(`/member/${memberSlug(member.id, member.name)}`)} class="member-trigger text-inherit no-underline hover:underline" data-member-name={startedBy}>{startedBy}</a>
 			: <span>{startedBy}</span>
 		}
 	</td>
-	<td class="whitespace-nowrap px-2 py-2 text-(--color-text-muted)"><time datetime={createdDate} title={createdDate}>{formatDate(createdDate)}</time></td>
-	<td class="px-2 py-2 text-right tabular-nums">{responses}</td>
-	<td class="px-2 py-2 text-right tabular-nums">{views.toLocaleString()}</td>
+	<td class={`${meta} ${separated} whitespace-nowrap`}><time datetime={createdDate} title={createdDate}>{formatDate(createdDate)}</time></td>
+	<td class={`${meta} ${separated} ${unmuted} tabular-nums sm:text-right`}>{responses}<span class="sm:hidden"> replies</span></td>
+	<td class={`${meta} ${separated} ${unmuted} tabular-nums sm:text-right`}>{views.toLocaleString()}<span class="sm:hidden"> views</span></td>
 </tr>
