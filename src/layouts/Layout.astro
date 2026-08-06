@@ -301,6 +301,10 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         var debounce;
         var activeIndex = -1;
 
+        // Prefill from the `q` param a result link carried over, so reopening
+        // search on the landed page shows the query that got you there.
+        input.value = new URLSearchParams(location.search).get("q") || "";
+
         function esc(s) {
           var d = document.createElement("div");
           d.textContent = s;
@@ -355,6 +359,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
           modalPanel.setAttribute("aria-label", "Search");
           document.body.style.overflow = "hidden";
           input.focus();
+          input.select();
+          if (input.value) search(input.value);
         }
 
         function closeModal() {
@@ -365,8 +371,6 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
           document.body.style.overflow = "";
           activeIndex = -1;
           input.setAttribute("aria-activedescendant", "");
-          input.value = "";
-          results.innerHTML = "";
           announce.textContent = "";
           btn.focus();
         }
