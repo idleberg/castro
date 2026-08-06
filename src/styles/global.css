@@ -39,6 +39,15 @@
 	--color-focus-ring: #818cf8;
 }
 
+/*
+ * Keep hash-linked posts clear of the sticky breadcrumb bar (py-2 + text-sm +
+ * 1px border ≈ 2.3rem) and the sticky pagination bar at the bottom.
+ */
+html {
+	scroll-padding-top: 3rem;
+	scroll-padding-bottom: 3.5rem;
+}
+
 :focus-visible {
 	outline: 2px solid var(--color-focus-ring);
 	outline-offset: 2px;
