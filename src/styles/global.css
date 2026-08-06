@@ -18,6 +18,9 @@
 	--color-badge-closed-bg: #fef3c7;
 	--color-badge-closed-text: #92400e;
 	--color-focus-ring: #4f46e5;
+	/* amber-300 on amber-950 */
+	--color-mark-bg: #fcd34d;
+	--color-mark-text: #451a03;
 }
 
 .dark {
@@ -37,6 +40,14 @@
 	--color-badge-closed-bg: #451a03;
 	--color-badge-closed-text: #fde68a;
 	--color-focus-ring: #818cf8;
+}
+
+/* Pagefind wraps matched terms in <mark>; override the UA yellow */
+mark {
+	background-color: var(--color-mark-bg);
+	color: var(--color-mark-text);
+	border-radius: 0.125rem;
+	padding: 0 0.125rem;
 }
 
 /*
