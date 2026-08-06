@@ -39,7 +39,7 @@ await Promise.all(threads.map(async (t) => {
 <h1 class="text-2xl font-bold mb-1 mt-4">{forum.name}</h1>
 <p class="text-(--color-text-muted) mb-4">{allThreads.length} threads</p>
 
-<table class="block w-full border-collapse text-sm sm:table">
+<table class="block w-full border-collapse text-base sm:table">
 	<caption class="sr-only">{forum.name} threads</caption>
 	<thead class="hidden sm:table-header-group">
 		<tr class="border-b-2 border-(--color-border) text-left text-(--color-text-muted)">
@@ -56,7 +56,7 @@ await Promise.all(threads.map(async (t) => {
 				<td class="block px-2 py-3 font-bold sm:table-cell sm:py-2" colspan="5">
 					<IconFolder class="mr-1 inline size-3.5 text-(--color-text-muted)" aria-hidden="true" />
 					<a href={routePath(`/forum/${sub.channelId}`)} class="text-(--color-link) hover:underline">{sub.name}</a>
-					<span class="ml-2 text-xs font-normal text-(--color-text-muted)">{sub.threads.length} threads</span>
+					<span class="ml-2 text-sm font-normal text-(--color-text-muted)">{sub.threads.length} threads</span>
 				</td>
 			</tr>
 		))}

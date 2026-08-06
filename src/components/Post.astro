@@ -21,23 +21,23 @@ const { post } = Astro.props;
 			<span class="inline-block size-6 rounded-full overflow-hidden ring-1 ring-(--color-border)" aria-hidden="true" set:html={avatar(post.author)} />
 			{post.author}
 		</a>
-		<time datetime={post.created} title={post.created} class="text-xs text-(--color-text-muted)">{formatDateTime(post.created)}</time>
+		<time datetime={post.created} title={post.created} class="text-sm text-(--color-text-muted)">{formatDateTime(post.created)}</time>
 		{post.updated && (
-			<span class="text-xs italic text-(--color-text-muted)">edited <time datetime={post.updated} title={post.updated}>{formatDateTime(post.updated)}</time></span>
+			<span class="text-sm italic text-(--color-text-muted)">edited <time datetime={post.updated} title={post.updated}>{formatDateTime(post.updated)}</time></span>
 		)}
-		<a href={`#post-${post.id}`} class="ml-auto text-xs text-(--color-text-muted) hover:text-(--color-link) no-underline" aria-label={`Link to post ${post.id}`}>#</a>
+		<a href={`#post-${post.id}`} class="ml-auto text-sm text-(--color-text-muted) hover:text-(--color-link) no-underline" aria-label={`Link to post ${post.id}`}>#</a>
 	</header>
 
-	{post.title && <h2 class="mb-2 text-base font-semibold">{post.title}</h2>}
+	{post.title && <h2 class="mb-2 text-lg font-semibold">{post.title}</h2>}
 
-	<div class="post-body text-sm leading-relaxed break-words" set:html={sanitizeHtml(post.body)} />
+	<div class="post-body text-base leading-relaxed break-words" set:html={sanitizeHtml(post.body)} />
 
 	{post.attachments.length > 0 && (
 		<footer class="post-footer">
-			<h3 class="mb-1 text-xs font-semibold text-(--color-text-muted)">Attachments</h3>
+			<h3 class="mb-1 text-sm font-semibold text-(--color-text-muted)">Attachments</h3>
 			<ul class="space-y-0.5">
 				{post.attachments.map((att) => (
-					<li class="text-xs">
+					<li class="text-sm">
 						<a href={att.url?.startsWith('/') ? routePath(att.url) : att.url ?? routePath(`/attachments/${att.id}`)} {...((att.url ?? '/').startsWith('/') ? { download: att.name } : { target: '_blank', rel: 'noopener' })} class="text-(--color-link) hover:underline">{att.name}</a>
 						{(att.size || att.views > 0) && (
 							<span class="text-(--color-text-muted) ml-1">({[att.size, att.views > 0 && `${att.views.toLocaleString()} views`].filter(Boolean).join(', ')})</span>
@@ -64,7 +64,7 @@ const { post } = Astro.props;
 		padding: 0.75rem;
 		border-radius: 0.25rem;
 		overflow-x: auto;
-		font-size: 0.8rem;
+		font-size: 0.875rem;
 		margin: 0.5rem 0;
 	}
 
