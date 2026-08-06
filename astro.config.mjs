@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import castro from './.castro/integration.ts';
 
@@ -10,5 +10,12 @@ export default defineConfig({
 			githubPages: true,
 		}),
 		sitemap(),
+	],
+	fonts: [
+		{
+			provider: fontProviders.fontsource(),
+			name: 'Libre Franklin',
+			cssVariable: '--font-sans',
+		},
 	],
 });
