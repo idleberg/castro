@@ -5,6 +5,7 @@ export type { MemberData } from './types.ts';
 import { threadIdFromUrl, threadSlug } from './format.ts';
 
 const DATA_ROOT = join(process.cwd(), 'data');
+const TRUNCATE_LENGTH = 400;
 
 // Use globalThis so caches survive module re-evaluation during Astro's build
 const g = globalThis as Record<string, unknown>;
@@ -192,7 +193,7 @@ export async function getThreadTeaser(id: string): Promise<ThreadTeaser | undefi
 	return {
 		title: thread.title,
 		author: first.author,
-		excerpt: plain.length > 200 ? plain.slice(0, 200) + '…' : plain,
+		excerpt: plain.length > TRUNCATE_LENGTH ? plain.slice(0, TRUNCATE_LENGTH) + '…' : plain,
 		postCount: thread.posts.length,
 	};
 }
