@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import type { ForumData, ThreadData, ThreadRef, MemberData } from './types.ts';
 export type { MemberData } from './types.ts';
 import { threadIdFromUrl, threadSlug } from './format.ts';
+import { MEMBER_RANKING_MIN_ENTRIES, MEMBER_RANKING_MIN_THREADS } from './constants.ts';
 
 const DATA_ROOT = join(process.cwd(), 'data');
 const TRUNCATE_LENGTH = 400;
@@ -241,7 +242,11 @@ export async function getThreadsForMember(memberName: string): Promise<MemberThr
 	return index.get(memberName) ?? [];
 }
 
-/** Threads the member started, ranked by `responses` or `views` (descending). */
+/**
+ * Threads the member started, ranked by `responses` or `views` (descending).
+ * Empty unless the member opened enough threads, and enough of those scored
+ * above zero, for the ordering to say anything.
+ */
 export async function getTopThreadsByMember(
 	memberName: string,
 	by: 'responses' | 'views',
@@ -249,10 +254,11 @@ export async function getTopThreadsByMember(
 ): Promise<MemberThread[]> {
 	const index = await loadMemberStartedIndex();
 	const started = index.get(memberName) ?? [];
-	return started
-		.filter((t) => (t[by] ?? 0) > 0)
-		.toSorted((a, b) => (b[by] ?? 0) - (a[by] ?? 0))
-		.slice(0, limit);
+	if (started.length < MEMBER_RANKING_MIN_THREADS) return [];
+
+	const ranked = started.filter((t) => (t[by] ?? 0) > 0).toSorted((a, b) => (b[by] ?? 0) - (a[by] ?? 0));
+
+	return ranked.length < MEMBER_RANKING_MIN_ENTRIES ? [] : ranked.slice(0, limit);
 }
 
 export interface Breadcrumb {
