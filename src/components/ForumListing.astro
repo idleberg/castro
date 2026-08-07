@@ -3,7 +3,7 @@ import MemberPopup from './MemberPopup.astro';
 import ThreadPopup from './ThreadPopup.astro';
 import ThreadRow from './ThreadRow.astro';
 import Pagination from './Pagination.astro';
-import { getAllMembers, getThreadTeaser, type ThreadTeaser, type MemberData } from '../lib/data.ts';
+import { getAllMembers, getThreadTeaser, getThreadsWithAttachments, type ThreadTeaser, type MemberData } from '../lib/data.ts';
 import type { ForumData } from '../lib/types.ts';
 import { threadIdFromUrl, routePath } from '../lib/format.ts';
 import { FORUM_PER_PAGE } from '../lib/constants.ts';
@@ -27,6 +27,8 @@ const allMembersByName = new Map(allMembers.map((m) => [m.name, m]));
 const membersByName = new Map(
 	threads.map((t) => [t.startedBy, allMembersByName.get(t.startedBy)]).filter(([, m]) => m) as [string, MemberData][],
 );
+
+const withAttachments = await getThreadsWithAttachments();
 
 const threadTeasers = new Map<string, ThreadTeaser>();
 await Promise.all(threads.map(async (t) => {
@@ -70,6 +72,7 @@ await Promise.all(threads.map(async (t) => {
 				views={t.views}
 				sticky={t.sticky}
 				closed={t.closed}
+				hasAttachment={withAttachments.has(t.id)}
 				member={membersByName.get(t.startedBy)}
 			/>
 		))}

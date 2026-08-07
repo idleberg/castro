@@ -162,6 +162,16 @@ const loadMemberStartedIndex = cached('memberStartedIndex', async () => {
 	return index;
 });
 
+/** Ids of threads carrying at least one attachment on any post. */
+const loadThreadsWithAttachments = cached('threadsWithAttachments', async () => {
+	const threads = await loadAllThreads();
+	const ids = new Set<string>();
+	for (const [id, thread] of threads) {
+		if (thread.posts.some((p) => p.attachments?.length > 0)) ids.add(id);
+	}
+	return ids;
+});
+
 // --- Public API ---
 
 export function getForums(): Promise<ForumData[]> {
@@ -187,6 +197,10 @@ export async function getSubForums(): Promise<ForumData[]> {
 export async function getThread(id: string): Promise<ThreadData | undefined> {
 	const threads = await loadAllThreads();
 	return threads.get(id);
+}
+
+export function getThreadsWithAttachments(): Promise<Set<string>> {
+	return loadThreadsWithAttachments();
 }
 
 export async function getAllThreadIds(): Promise<string[]> {

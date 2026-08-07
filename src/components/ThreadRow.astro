@@ -2,6 +2,7 @@
 import { formatDate, threadSlug, memberSlug, routePath } from '../lib/format.ts';
 import type { MemberData } from '../lib/types.ts';
 import ThreadFlags from './ThreadFlags.astro';
+import IconPaperclip from '~icons/ph/paperclip-bold';
 
 interface Props {
 	id: string;
@@ -12,10 +13,11 @@ interface Props {
 	views: number;
 	sticky: boolean;
 	closed: boolean;
+	hasAttachment?: boolean;
 	member?: MemberData;
 }
 
-const { id, title, startedBy, createdDate, responses, views, sticky, closed, member } = Astro.props;
+const { id, title, startedBy, createdDate, responses, views, sticky, closed, hasAttachment = false, member } = Astro.props;
 
 // Below `sm` the row stacks: the title gets its own line, the remaining cells run
 // inline as a muted meta line separated by middots
@@ -31,7 +33,15 @@ const unmuted = 'sm:text-(--color-text)';
 	<td class="block sm:table-cell sm:px-2 sm:py-2">
 		<ThreadFlags sticky={sticky} closed={closed} />
 		{id ? (
-			<a href={routePath(`/thread/${threadSlug(id, title)}`)} class="thread-trigger text-(--color-link) hover:underline" data-thread-id={id}>{title}</a>
+			<>
+				<a href={routePath(`/thread/${threadSlug(id, title)}`)} class="thread-trigger text-(--color-link) hover:underline" data-thread-id={id}>{title}</a>
+				{hasAttachment && (
+					<>
+						<IconPaperclip class="ml-1.5 inline size-3.5 text-(--color-text-muted)" aria-hidden="true" />
+						<span class="sr-only">Has attachment</span>
+					</>
+				)}
+			</>
 		) : (
 			title
 		)}
