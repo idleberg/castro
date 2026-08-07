@@ -1,7 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { getAllMembers, getMember, getThreadsForMember } from '../../lib/data.ts';
+import ThreadLinkList from '../../components/ThreadLinkList.astro';
+import { getAllMembers, getMember, getThreadsForMember, getTopThreadsByMember } from '../../lib/data.ts';
 import { SITE_NAME } from 'astro:env/server';
 import { formatDate, slugify, routePath } from '../../lib/format.ts';
 import { avatar } from '../../lib/avatar.ts';
@@ -18,6 +19,8 @@ const { memberId } = Astro.props;
 const member = await getMember(memberId);
 if (!member) return Astro.redirect(routePath('/'));
 const activeThreads = await getThreadsForMember(member.name);
+const mostActiveThreads = await getTopThreadsByMember(member.name, 'responses');
+const mostViewedThreads = await getTopThreadsByMember(member.name, 'views');
 
 const info = [
 	member.joinDate && ['Joined', formatDate(member.joinDate), member.joinDate],
@@ -47,16 +50,7 @@ const info = [
 		))}
 	</dl>
 
-	{activeThreads.length > 0 && (
-		<section>
-			<h2 class="text-lg font-semibold mb-3">Recent activity</h2>
-			<ul class="space-y-1 text-base list-none p-0">
-				{activeThreads.map((t) => (
-					<li>
-						<span class="text-(--color-text-muted)">–</span> <a href={routePath(`/thread/${t.slug}`)} class="text-(--color-link) hover:underline">{t.title}</a>
-					</li>
-				))}
-			</ul>
-		</section>
-	)}
+	<ThreadLinkList heading="Recent activity" threads={activeThreads} />
+	<ThreadLinkList heading="Most active threads" threads={mostActiveThreads} />
+	<ThreadLinkList heading="Most viewed threads" threads={mostViewedThreads} />
 </Layout>

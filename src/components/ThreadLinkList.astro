@@ -1,0 +1,25 @@
+---
+import { formatDate, routePath } from '../lib/format.ts';
+import type { MemberThread } from '../lib/data.ts';
+
+interface Props {
+	heading: string;
+	threads: MemberThread[];
+}
+
+const { heading, threads } = Astro.props;
+---
+
+{threads.length > 0 && (
+	<section class="mb-8 last:mb-0">
+		<h2 class="text-lg font-semibold mb-3">{heading}</h2>
+		<ol class="space-y-1 text-base list-decimal ps-6 marker:text-(--color-text-muted)">
+			{threads.map((t) => (
+				<li>
+					<a href={routePath(`/thread/${t.slug}`)} class="text-(--color-link) hover:underline">{t.title}</a>
+					<time datetime={t.date} title={t.date} class="ml-2 text-sm text-(--color-text-muted) whitespace-nowrap">{formatDate(t.date)}</time>
+				</li>
+			))}
+		</ol>
+	</section>
+)}
