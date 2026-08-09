@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="Diagram of the nine circles of the Inferno">
+	<title>The nine circles, as I saw them</title>
+	<rect width="320" height="320" fill="#f8f5ef" />
+	<g fill="none" stroke="#6b4a2f" stroke-width="1.25">
+		<circle cx="160" cy="160" r="150" />
+		<circle cx="160" cy="160" r="133" />
+		<circle cx="160" cy="160" r="116" />
+		<circle cx="160" cy="160" r="99" />
+		<circle cx="160" cy="160" r="82" />
+		<circle cx="160" cy="160" r="65" />
+		<circle cx="160" cy="160" r="48" />
+		<circle cx="160" cy="160" r="31" />
+		<circle cx="160" cy="160" r="14" />
+	</g>
+	<g font-family="Georgia, serif" font-size="9" fill="#3d2a19" text-anchor="middle">
+		<text x="160" y="24">I · Limbo</text>
+		<text x="160" y="41">II · Lust</text>
+		<text x="160" y="58">III · Gluttony</text>
+		<text x="160" y="75">IV · Greed</text>
+		<text x="160" y="92">V · Wrath</text>
+		<text x="160" y="109">VI · Heresy</text>
+		<text x="160" y="126">VII · Violence</text>
+		<text x="160" y="143">VIII · Fraud</text>
+		<text x="160" y="163">IX · Treachery</text>
+	</g>
+	<text x="160" y="310" font-family="Georgia, serif" font-size="10" fill="#6b4a2f" text-anchor="middle" font-style="italic">sketched from memory — proportions not to scale</text>
+</svg>
