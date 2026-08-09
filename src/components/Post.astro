@@ -40,7 +40,7 @@ const { post } = Astro.props;
 					<li class="text-sm">
 						<a href={att.url?.startsWith('/') ? routePath(att.url) : att.url ?? routePath(`/attachments/${att.id}`)} {...((att.url ?? '/').startsWith('/') ? { download: att.name } : { target: '_blank', rel: 'noopener' })} class="text-(--color-link) hover:underline">{att.name}</a>
 						{(att.size || att.views > 0) && (
-							<span class="text-(--color-text-muted) ml-1">({[att.size, att.views > 0 && `${att.views.toLocaleString()} views`].filter(Boolean).join(', ')})</span>
+							<span class="text-(--color-text-muted) ml-1">({[att.size, att.views > 0 && `${att.views.toLocaleString()} ${att.views === 1 ? 'download' : 'downloads'}`].filter(Boolean).join(', ')})</span>
 						)}
 					</li>
 				))}
