@@ -14,9 +14,14 @@ const { selector } = Astro.props;
 		var els = document.querySelectorAll(selector);
 		for (var i = 0; i < els.length; i++) {
 			if (els[i].textContent.toLowerCase().includes(q)) {
-				els[i].classList.add('is-match');
-				els[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
-				history.replaceState(null, '', location.pathname + '#' + els[i].id);
+				var match = els[i];
+				match.classList.add('is-match');
+				match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				history.replaceState(null, '', location.pathname + '#' + match.id);
+				// Hand the highlight over to :target once another permalink is clicked
+				window.addEventListener('hashchange', function() {
+					match.classList.remove('is-match');
+				}, { once: true });
 				break;
 			}
 		}
