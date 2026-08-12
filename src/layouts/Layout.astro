@@ -76,14 +76,43 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
           };
         }
 
-        // Safari < 15.4 lacks :focus-visible; treat any focus as keyboard focus there
-        function isKeyboardFocus(el) {
-          try {
-            return el.matches(":focus-visible");
-          } catch (e) {
-            return true;
-          }
-        }
+        /*
+         * Input modality, tracked by hand rather than via :focus-visible.
+         * Tapping a link on iPadOS focuses it, and whether WebKit then reports
+         * :focus-visible is a heuristic that varies by version (and the selector
+         * throws outright before Safari 15.4). Both flags therefore fail closed:
+         * a popup opens only after input we have positively identified as a
+         * keyboard or a mouse.
+         */
+        var keyboardModality = false;
+        var touchModality = false;
+
+        document.addEventListener(
+          "keydown",
+          function (e) {
+            if (e.key === "Tab" || e.key.indexOf("Arrow") === 0) {
+              keyboardModality = true;
+              touchModality = false;
+            }
+          },
+          true,
+        );
+        document.addEventListener(
+          "pointerdown",
+          function (e) {
+            keyboardModality = false;
+            touchModality = e.pointerType !== "mouse";
+          },
+          true,
+        );
+        // A trackpad or mouse attached to a tablet clears the touch latch
+        document.addEventListener(
+          "pointermove",
+          function (e) {
+            if (e.pointerType === "mouse") touchModality = false;
+          },
+          true,
+        );
 
         /*
          * Wires a set of triggers to a popup panel. Hover is mouse-only: touch
@@ -113,7 +142,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
             ctl.timers.scheduleHide(ctl.hide);
           });
           el.addEventListener("focus", function () {
-            if (!isKeyboardFocus(el)) return;
+            if (!keyboardModality) return;
             ctl.timers.scheduleShow(function () {
               ctl.showAtElement(el, key);
             });
@@ -127,14 +156,17 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 
         // Safety nets so a popup can always be closed, whatever the input device
         function bindDismissals(popup, ctl) {
-          document.addEventListener(
-            "pointerdown",
-            function (e) {
-              if (popup.contains(e.target)) return;
-              ctl.dismiss();
-            },
-            true,
-          );
+          function dismissOutside(e) {
+            if (popup.contains(e.target)) return;
+            ctl.dismiss();
+          }
+          // touchstart as well as pointerdown: any tap off the panel closes it,
+          // even on a browser that never delivered a pointer event to open it
+          document.addEventListener("pointerdown", dismissOutside, true);
+          document.addEventListener("touchstart", dismissOutside, {
+            capture: true,
+            passive: true,
+          });
           // The panel is position:fixed, so scrolling detaches it from its trigger
           addEventListener("scroll", ctl.dismiss, {
             capture: true,
@@ -142,7 +174,9 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
           });
           addEventListener("resize", ctl.dismiss);
           addEventListener("pagehide", ctl.dismiss);
+          addEventListener("pageshow", ctl.dismiss);
           document.addEventListener("astro:before-swap", ctl.dismiss);
+          document.addEventListener("astro:after-swap", ctl.dismiss);
 
           document.addEventListener("keydown", function (e) {
             if (e.key !== "Escape" || popup.classList.contains("hidden")) return;
@@ -175,13 +209,15 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
               popup.classList.add("hidden");
               active = null;
             },
+            // Last line of defence: whatever path got us here, a popup never
+            // opens while the most recent interaction was a touch or a pen
             showAt: function (el, key, cx, cy) {
-              if (!cfg.render(key)) return;
+              if (touchModality || !cfg.render(key)) return;
               active = el;
               position(popup, cx, cy);
             },
             showAtElement: function (el, key) {
-              if (!cfg.render(key)) return;
+              if (touchModality || !cfg.render(key)) return;
               active = el;
               positionFromElement(popup, el);
             },
