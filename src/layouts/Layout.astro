@@ -70,13 +70,143 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
             cancelHide: function () {
               clearTimeout(hideTimer);
             },
+            cancelShow: function () {
+              clearTimeout(showTimer);
+            },
           };
+        }
+
+        // Safari < 15.4 lacks :focus-visible; treat any focus as keyboard focus there
+        function isKeyboardFocus(el) {
+          try {
+            return el.matches(":focus-visible");
+          } catch (e) {
+            return true;
+          }
+        }
+
+        /*
+         * Wires a set of triggers to a popup panel. Hover is mouse-only: touch
+         * taps emit emulated mouseenter but never a matching mouseleave, which
+         * left popups stuck open and swallowing taps on mobile. Every listener
+         * that opens the popup is gated on a real mouse pointer or keyboard
+         * focus, and a set of unconditional dismissals guarantees it can always
+         * be closed.
+         *
+         * cfg: { popup, selector, key(el) -> string, render(key) -> bool,
+         *        interactive: keep open while the mouse is over the panel }
+         */
+        function bindTrigger(el, cfg, ctl) {
+          var key = cfg.key(el);
+          el.setAttribute("aria-describedby", cfg.popup.id);
+
+          el.addEventListener("pointerenter", function (e) {
+            if (e.pointerType !== "mouse") return;
+            var cx = e.clientX;
+            var cy = e.clientY;
+            ctl.timers.scheduleShow(function () {
+              ctl.showAt(el, key, cx, cy);
+            });
+          });
+          el.addEventListener("pointerleave", function (e) {
+            if (e.pointerType !== "mouse") return;
+            ctl.timers.scheduleHide(ctl.hide);
+          });
+          el.addEventListener("focus", function () {
+            if (!isKeyboardFocus(el)) return;
+            ctl.timers.scheduleShow(function () {
+              ctl.showAtElement(el, key);
+            });
+          });
+          el.addEventListener("blur", function () {
+            ctl.timers.scheduleHide(ctl.hide);
+          });
+          // Triggers are links: never leave a popup behind on navigation
+          el.addEventListener("click", ctl.dismiss);
+        }
+
+        // Safety nets so a popup can always be closed, whatever the input device
+        function bindDismissals(popup, ctl) {
+          document.addEventListener(
+            "pointerdown",
+            function (e) {
+              if (popup.contains(e.target)) return;
+              ctl.dismiss();
+            },
+            true,
+          );
+          // The panel is position:fixed, so scrolling detaches it from its trigger
+          addEventListener("scroll", ctl.dismiss, {
+            capture: true,
+            passive: true,
+          });
+          addEventListener("resize", ctl.dismiss);
+          addEventListener("pagehide", ctl.dismiss);
+          document.addEventListener("astro:before-swap", ctl.dismiss);
+
+          document.addEventListener("keydown", function (e) {
+            if (e.key !== "Escape" || popup.classList.contains("hidden")) return;
+            var trigger = ctl.activeTrigger();
+            ctl.hide();
+            if (trigger) trigger.focus();
+          });
+        }
+
+        function bindPanel(popup, ctl) {
+          popup.addEventListener("pointerenter", function (e) {
+            if (e.pointerType !== "mouse") return;
+            ctl.timers.cancelHide();
+          });
+          popup.addEventListener("pointerleave", function (e) {
+            if (e.pointerType !== "mouse") return;
+            ctl.timers.scheduleHide(ctl.hide);
+          });
+        }
+
+        function createController(cfg) {
+          var popup = cfg.popup;
+          var active = null;
+          var ctl = {
+            timers: createTimers(),
+            activeTrigger: function () {
+              return active;
+            },
+            hide: function () {
+              popup.classList.add("hidden");
+              active = null;
+            },
+            showAt: function (el, key, cx, cy) {
+              if (!cfg.render(key)) return;
+              active = el;
+              position(popup, cx, cy);
+            },
+            showAtElement: function (el, key) {
+              if (!cfg.render(key)) return;
+              active = el;
+              positionFromElement(popup, el);
+            },
+          };
+          ctl.dismiss = function () {
+            ctl.timers.cancelShow();
+            if (!popup.classList.contains("hidden")) ctl.hide();
+          };
+          return ctl;
+        }
+
+        function attach(cfg) {
+          var ctl = createController(cfg);
+          document.querySelectorAll(cfg.selector).forEach(function (el) {
+            bindTrigger(el, cfg, ctl);
+          });
+          if (cfg.interactive) bindPanel(cfg.popup, ctl);
+          bindDismissals(cfg.popup, ctl);
         }
 
         return {
           position: position,
           positionFromElement: positionFromElement,
           createTimers: createTimers,
+          attach: attach,
         };
       })();
     </script>

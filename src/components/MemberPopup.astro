@@ -21,7 +21,7 @@ const membersJson = JSON.stringify(Object.fromEntries(
 ));
 ---
 
-<div id="member-popup" class="fixed z-50 hidden rounded-lg border border-(--color-border) bg-(--color-surface) p-4 shadow-xl max-w-xs" role="tooltip">
+<div id="member-popup" class="popup-panel popup-panel-interactive fixed z-50 hidden rounded-lg border border-(--color-border) bg-(--color-surface) p-4 shadow-xl max-w-xs" role="tooltip">
 	<div id="popup-content"></div>
 </div>
 
@@ -30,8 +30,6 @@ const membersJson = JSON.stringify(Object.fromEntries(
 	var popup = document.querySelector('#member-popup');
 	var content = document.querySelector('#popup-content');
 	var pp = window.__popup;
-	var timers = pp.createTimers();
-	var activeTrigger = null;
 
 	function esc(s) {
 		var d = document.createElement('div');
@@ -64,52 +62,11 @@ const membersJson = JSON.stringify(Object.fromEntries(
 		return true;
 	}
 
-	function show(key, cx, cy) {
-		if (!render(key)) return;
-		pp.position(popup, cx, cy);
-	}
-
-	function showFromElement(key, el) {
-		if (!render(key)) return;
-		pp.positionFromElement(popup, el);
-		activeTrigger = el;
-	}
-
-	function hide() {
-		popup.classList.add('hidden');
-		activeTrigger = null;
-	}
-
-	document.querySelectorAll('.member-trigger').forEach(function(el) {
-		var key = el.dataset.memberId || el.dataset.memberName;
-
-		el.setAttribute('aria-describedby', 'member-popup');
-
-		el.addEventListener('mouseenter', function(e) {
-			var cx = e.clientX, cy = e.clientY;
-			timers.scheduleShow(function() { show(key, cx, cy); });
-		});
-		el.addEventListener('mouseleave', function() { timers.scheduleHide(hide); });
-		el.addEventListener('focus', function() {
-			timers.scheduleShow(function() { showFromElement(key, el); });
-		});
-		el.addEventListener('blur', function() { timers.scheduleHide(hide); });
-
-		el.addEventListener('keydown', function(e) {
-			if (e.key === 'Escape') {
-				hide();
-				el.focus();
-			}
-		});
-	});
-
-	popup.addEventListener('mouseenter', function() { timers.cancelHide(); });
-	popup.addEventListener('mouseleave', function() { timers.scheduleHide(hide); });
-
-	document.addEventListener('keydown', function(e) {
-		if (e.key === 'Escape' && !popup.classList.contains('hidden')) {
-			hide();
-			if (activeTrigger) activeTrigger.focus();
-		}
+	pp.attach({
+		popup: popup,
+		selector: '.member-trigger',
+		key: function(el) { return el.dataset.memberId || el.dataset.memberName; },
+		render: render,
+		interactive: true,
 	});
 </script>

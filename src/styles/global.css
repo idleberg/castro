@@ -77,6 +77,21 @@ tr[id^='thread-']:target {
 	outline-offset: -2px;
 }
 
+/*
+ * Hover popups never swallow taps: they are inert by default, and only take
+ * pointer events on real hover-capable devices, where the mouse needs to be
+ * able to enter the panel to keep it open.
+ */
+.popup-panel {
+	pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.popup-panel-interactive {
+		pointer-events: auto;
+	}
+}
+
 .theme-btn:focus-visible {
 	outline: none;
 	box-shadow: inset 0 0 0 2px var(--color-focus-ring);
