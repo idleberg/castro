@@ -5,7 +5,6 @@ inputs:
   site-map:
     description: 'JSON array of URLs to submit'
     required: true
-    default: 'https://idleberg.github.io/castro/sitemap-index.xml'
 
 runs:
   using: 'node24'

@@ -6,7 +6,7 @@ on:
       sitemap_url:
         description: 'Sitemap URL to process'
         required: true
-        default: 'https://example.com/sitemap.xml'
+        default: 'https://idleberg.github.io/castro/sitemap-index.xml'
 
 jobs:
   # Job 1: Parse sitemap and create chunked JSON array
