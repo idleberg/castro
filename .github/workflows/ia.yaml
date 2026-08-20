@@ -1,0 +1,69 @@
+name: Bulk Submit to Internet Archive
+
+on:
+  workflow_dispatch:
+    inputs:
+      sitemap_url:
+        description: 'Sitemap URL to process'
+        required: true
+        default: 'https://example.com/sitemap.xml'
+
+jobs:
+  # Job 1: Parse sitemap and create chunked JSON array
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.generate-chunks.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Parse and Chunk Sitemap
+        id: generate-chunks
+        run: |
+          # Runs your TypeScript script to fetch sitemap, split into chunks,
+          # and output a JSON stringified array like: {"chunk": [["url1", "url2"], ["url3", "url4"]]}
+          npx ts-node ./scripts/parse-and-chunk-sitemap.ts \
+            --sitemap "${{ github.event.inputs.sitemap_url }}" \
+            --chunk-size 1000
+
+  # Job 2: Process chunks in parallel via matrix
+  submit:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      # Prevents one failing chunk from cancelling all other active jobs
+      fail-fast: false
+      # Adjust max-parallel based on GitHub runner limits and API limits
+      max-parallel: 4
+      matrix:
+        chunk: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Submit Chunk to Internet Archive
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+          # Pass the JSON array chunk directly to the script
+          URL_CHUNK: ${{ toJson(matrix.chunk) }}
+        run: |
+          # Runs your TypeScript script with fetchWithRetry logic
+          npx ts-node ./scripts/submit-chunk.ts

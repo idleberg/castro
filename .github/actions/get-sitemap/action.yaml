@@ -1,0 +1,12 @@
+name: 'Submit Chunk to Internet Archive'
+description: 'Submits a batch of URLs to the Internet Archive'
+
+inputs:
+  site-map:
+    description: 'JSON array of URLs to submit'
+    required: true
+    default: 'https://idleberg.github.io/castro/sitemap-index.xml'
+
+runs:
+  using: 'node24'
+  main: 'index.ts'
