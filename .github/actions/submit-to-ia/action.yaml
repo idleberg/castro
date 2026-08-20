@@ -5,12 +5,12 @@ inputs:
   url-chunk:
     description: 'JSON array of URLs to submit'
     required: true
-  ia-access-key:
-    description: 'Internet Archive Access Key'
-    required: true
-  ia-secret-key:
-    description: 'Internet Archive Secret Key'
-    required: true
+  # ia-access-key:
+  #   description: "Internet Archive Access Key"
+  #   required: true
+  # ia-secret-key:
+  #   description: "Internet Archive Secret Key"
+  #   required: true
 
 runs:
   using: 'node24'
