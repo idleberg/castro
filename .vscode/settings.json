@@ -5,5 +5,8 @@
 	"editor.defaultFormatter": "oxc.oxc-vscode",
 	"editor.formatOnSave": true,
 	"oxc.fmt.configPath": ".oxfmtrc.json",
-	"oxc.typeAware": true
+	"oxc.typeAware": true,
+	"[typescript]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode"
+	}
 }
