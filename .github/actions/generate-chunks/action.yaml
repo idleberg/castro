@@ -1,0 +1,11 @@
+name: 'Generate Chunks'
+description: 'Generates chunks of URLs from a sitemap'
+
+inputs:
+  site-map:
+    description: 'JSON array of URLs to submit'
+    required: true
+
+runs:
+  using: 'node24'
+  main: 'index.ts'

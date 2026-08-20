@@ -2,5 +2,8 @@
 node = "24"
 lefthook = { version = "latest", postinstall = "lefthook install" }
 
+[hooks]
+postinstall = "lefthook install"
+
 [settings]
 node.corepack = true

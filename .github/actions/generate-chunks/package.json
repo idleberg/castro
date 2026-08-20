@@ -1,0 +1,8 @@
+{
+	"name": "@castro/generate-chunks",
+	"private": true,
+	"dependencies": {
+		"@actions/core": "^3.0.1",
+		"sitemapper": "^4.1.6"
+	}
+}
