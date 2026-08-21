@@ -30,3 +30,18 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+
+  wayback:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve GitHub Pages URL
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Submit to Wayback Machine
+        uses: JamieMagee/wayback@e561c5018fb0e62988fddd732fb88345a3faa608 # v2.2.0
+        with:
+          url: ${{ steps.pages.outputs.base_url }}
+          saveOutlinks: true
+          saveScreenshot: true
