@@ -2,10 +2,6 @@ name: Bulk Submit to Internet Archive
 
 on:
   workflow_dispatch:
-    inputs:
-      sitemap_url:
-        description: 'Sitemap URL to process (defaults to this repository’s GitHub Pages sitemap)'
-        required: false
 
 jobs:
   # Job 1: Parse sitemap and create chunked JSON array
