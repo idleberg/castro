@@ -9,7 +9,7 @@
 		"build": "astro build && pagefind --site dist",
 		"preview": "astro preview",
 		"astro": "astro",
-		"lint": "oxlint",
+		"lint": "oxlint --no-error-on-unmatched-pattern",
 		"format": "oxfmt"
 	},
 	"dependencies": {
