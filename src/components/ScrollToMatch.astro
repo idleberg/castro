@@ -8,13 +8,13 @@ const { selector } = Astro.props;
 
 <script is:inline define:vars={{ selector }}>
 	(function() {
-		var query = new URLSearchParams(location.search).get('q');
+		const query = new URLSearchParams(location.search).get('q');
 		if (!query) return;
-		var q = query.toLowerCase();
-		var els = document.querySelectorAll(selector);
-		for (var i = 0; i < els.length; i++) {
+		const q = query.toLowerCase();
+		const els = document.querySelectorAll(selector);
+		for (let i = 0; i < els.length; i++) {
 			if (els[i].textContent.toLowerCase().includes(q)) {
-				var match = els[i];
+				const match = els[i];
 				match.classList.add('is-match');
 				match.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				history.replaceState(null, '', location.pathname + '#' + match.id);

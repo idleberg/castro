@@ -26,47 +26,50 @@ const membersJson = JSON.stringify(Object.fromEntries(
 </div>
 
 <script is:inline define:vars={{ membersJson }}>
-	var members = JSON.parse(membersJson);
-	var popup = document.querySelector('#member-popup');
-	var content = document.querySelector('#popup-content');
-	var pp = window.__popup;
+	// Scoped: ThreadPopup declares the same names, and both render on a forum page
+	(function() {
+		const members = JSON.parse(membersJson);
+		const popup = document.querySelector('#member-popup');
+		const content = document.querySelector('#popup-content');
+		const pp = window.__popup;
 
-	function esc(s) {
-		var d = document.createElement('div');
-		d.textContent = s;
-		return d.innerHTML;
-	}
+		function esc(s) {
+			const d = document.createElement('div');
+			d.textContent = s;
+			return d.innerHTML;
+		}
 
-	function render(key) {
-		var m = members[key];
-		if (!m) return false;
-		var rows = [
-			m.joinDate && ['Joined', m.joinDate[0]],
-			m.lastActivity && ['Last active', m.lastActivity[0]],
-			m.totalPosts && ['Posts', m.totalPosts.toLocaleString()],
-			m.location && ['Location', m.location],
-		].filter(Boolean);
+		function render(key) {
+			const m = members[key];
+			if (!m) return false;
+			const rows = [
+				m.joinDate && ['Joined', m.joinDate[0]],
+				m.lastActivity && ['Last active', m.lastActivity[0]],
+				m.totalPosts && ['Posts', m.totalPosts.toLocaleString()],
+				m.location && ['Location', m.location],
+			].filter(Boolean);
 
-		content.innerHTML =
-			'<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">' +
-			'<span style="display:inline-block;width:4rem;height:4rem;border-radius:9999px;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px var(--color-border)" aria-hidden="true">' + m.avatar + '</span>' +
-			'<div>' +
-			'<h2 style="font-size:1.25rem;font-weight:700">' + esc(m.name) + '</h2>' +
-			(m.title ? '<p style="color:var(--color-text-muted)">' + esc(m.title) + '</p>' : '') +
-			'</div></div>' +
-			'<dl style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;font-size:0.875rem">' +
-			rows.map(function(r) {
-				return '<dt style="color:var(--color-text-muted)">' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>';
-			}).join('') +
-			'</dl>';
-		return true;
-	}
+			content.innerHTML =
+				'<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">' +
+				'<span style="display:inline-block;width:4rem;height:4rem;border-radius:9999px;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px var(--color-border)" aria-hidden="true">' + m.avatar + '</span>' +
+				'<div>' +
+				'<h2 style="font-size:1.25rem;font-weight:700">' + esc(m.name) + '</h2>' +
+				(m.title ? '<p style="color:var(--color-text-muted)">' + esc(m.title) + '</p>' : '') +
+				'</div></div>' +
+				'<dl style="display:grid;grid-template-columns:auto 1fr;gap:0.25rem 1rem;font-size:0.875rem">' +
+				rows.map(function(r) {
+					return '<dt style="color:var(--color-text-muted)">' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>';
+				}).join('') +
+				'</dl>';
+			return true;
+		}
 
-	pp.attach({
-		popup: popup,
-		selector: '.member-trigger',
-		key: function(el) { return el.dataset.memberId || el.dataset.memberName; },
-		render: render,
-		interactive: true,
-	});
+		pp.attach({
+			popup: popup,
+			selector: '.member-trigger',
+			key: function(el) { return el.dataset.memberId || el.dataset.memberName; },
+			render: render,
+			interactive: true,
+		});
+	})();
 </script>

@@ -27,17 +27,17 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
     <link rel="sitemap" href={`${import.meta.env.BASE_URL}/sitemap-index.xml`} />
     <script is:inline>
       window.__popup = (function () {
-        var PAD = 8;
-        var OFFSET = 12;
+        const PAD = 8;
+        const OFFSET = 12;
 
         function position(popup, cx, cy) {
           popup.style.left = "0px";
           popup.style.top = "0px";
           popup.classList.remove("hidden");
 
-          var rect = popup.getBoundingClientRect();
-          var x = cx + OFFSET;
-          var y = cy + OFFSET;
+          const rect = popup.getBoundingClientRect();
+          let x = cx + OFFSET;
+          let y = cy + OFFSET;
 
           if (x + rect.width + PAD > window.innerWidth)
             x = cx - OFFSET - rect.width;
@@ -51,12 +51,12 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         }
 
         function positionFromElement(popup, el) {
-          var rect = el.getBoundingClientRect();
+          const rect = el.getBoundingClientRect();
           position(popup, rect.left, rect.bottom);
         }
 
         function createTimers() {
-          var hideTimer, showTimer;
+          let hideTimer, showTimer;
           return {
             scheduleShow: function (fn, delay) {
               clearTimeout(hideTimer);
@@ -84,8 +84,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
          * a popup opens only after input we have positively identified as a
          * keyboard or a mouse.
          */
-        var keyboardModality = false;
-        var touchModality = false;
+        let keyboardModality = false;
+        let touchModality = false;
 
         document.addEventListener(
           "keydown",
@@ -126,13 +126,13 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
          *        interactive: keep open while the mouse is over the panel }
          */
         function bindTrigger(el, cfg, ctl) {
-          var key = cfg.key(el);
+          const key = cfg.key(el);
           el.setAttribute("aria-describedby", cfg.popup.id);
 
           el.addEventListener("pointerenter", function (e) {
             if (e.pointerType !== "mouse") return;
-            var cx = e.clientX;
-            var cy = e.clientY;
+            const cx = e.clientX;
+            const cy = e.clientY;
             ctl.timers.scheduleShow(function () {
               ctl.showAt(el, key, cx, cy);
             });
@@ -180,7 +180,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 
           document.addEventListener("keydown", function (e) {
             if (e.key !== "Escape" || popup.classList.contains("hidden")) return;
-            var trigger = ctl.activeTrigger();
+            const trigger = ctl.activeTrigger();
             ctl.hide();
             if (trigger) trigger.focus();
           });
@@ -198,9 +198,9 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         }
 
         function createController(cfg) {
-          var popup = cfg.popup;
-          var active = null;
-          var ctl = {
+          const popup = cfg.popup;
+          let active = null;
+          const ctl = {
             timers: createTimers(),
             activeTrigger: function () {
               return active;
@@ -230,7 +230,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         }
 
         function attach(cfg) {
-          var ctl = createController(cfg);
+          const ctl = createController(cfg);
           document.querySelectorAll(cfg.selector).forEach(function (el) {
             bindTrigger(el, cfg, ctl);
           });
@@ -248,8 +248,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
     </script>
     <script is:inline>
       (function () {
-        var s = localStorage.getItem("theme");
-        var dark =
+        const s = localStorage.getItem("theme");
+        const dark =
           s === "dark" ||
           (s !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
         if (dark) document.documentElement.classList.add("dark");
@@ -396,20 +396,20 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 
     <script is:inline>
       (function () {
-        var btns = document.querySelectorAll(".theme-btn");
+        const btns = document.querySelectorAll(".theme-btn");
 
         function current() {
           return localStorage.getItem("theme") || "system";
         }
 
         function apply(mode) {
-          var dark =
+          const dark =
             mode === "dark" ||
             (mode === "system" &&
               matchMedia("(prefers-color-scheme: dark)").matches);
           document.documentElement.classList.toggle("dark", dark);
           btns.forEach(function (b) {
-            var active = b.dataset.theme === mode;
+            const active = b.dataset.theme === mode;
             b.classList.toggle("bg-(--color-surface-alt)", active);
             b.classList.toggle("text-(--color-text)", active);
             b.setAttribute("aria-checked", String(active));
@@ -420,7 +420,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 
         btns.forEach(function (b) {
           b.addEventListener("click", function () {
-            var mode = b.dataset.theme;
+            const mode = b.dataset.theme;
             if (mode === "system") {
               localStorage.removeItem("theme");
             } else {
@@ -449,8 +449,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 
     <script is:inline>
       (function () {
-        var isMac = /Mac|iPhone|iPod|iPad/u.test(navigator.platform);
-        var shortcutEl = document.querySelector("#search-shortcut");
+        const isMac = /Mac|iPhone|iPod|iPad/u.test(navigator.platform);
+        const shortcutEl = document.querySelector("#search-shortcut");
         if (shortcutEl) shortcutEl.textContent = isMac ? "⌘K" : "Ctrl K";
       })();
     </script>
@@ -459,20 +459,20 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
       (function () {
         // How many results to render, and how far past that to look so a member
         // ranked just outside the visible window can still be hoisted to the top.
-        var RESULT_LIMIT = 20;
-        var RESULT_OVERSCAN = 10;
+        const RESULT_LIMIT = 20;
+        const RESULT_OVERSCAN = 10;
 
-        var btn = document.querySelector("#search-button");
-        var modal = document.querySelector("#search-modal");
-        var backdrop = document.querySelector("#search-backdrop");
-        var input = document.querySelector("#search-input");
-        var results = document.querySelector("#search-results");
-        var announce = document.querySelector("#search-announce");
-        var pagefind = null;
+        const btn = document.querySelector("#search-button");
+        const modal = document.querySelector("#search-modal");
+        const backdrop = document.querySelector("#search-backdrop");
+        const input = document.querySelector("#search-input");
+        const results = document.querySelector("#search-results");
+        const announce = document.querySelector("#search-announce");
+        let pagefind = null;
 
-        var isMac = /Mac|iPhone|iPod|iPad/u.test(navigator.platform);
-        var debounce;
-        var activeIndex = -1;
+        const isMac = /Mac|iPhone|iPod|iPad/u.test(navigator.platform);
+        let debounce;
+        let activeIndex = -1;
 
         // Prefill from the `q` param a result link carried over, so reopening
         // search on the landed page shows the query that got you there.
@@ -483,7 +483,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         }
 
         function esc(s) {
-          var d = document.createElement("div");
+          const d = document.createElement("div");
           d.textContent = s;
           return d.innerHTML;
         }
@@ -516,10 +516,11 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         }
 
         function renderResult(item, index, query) {
-          var title = item.meta && item.meta.title ? item.meta.title : "Untitled";
-          var label = badge(item);
-          var sep = item.url.includes("?") ? "&" : "?";
-          var href = item.url + sep + "q=" + encodeURIComponent(query);
+          const title =
+            item.meta && item.meta.title ? item.meta.title : "Untitled";
+          const label = badge(item);
+          const sep = item.url.includes("?") ? "&" : "?";
+          const href = item.url + sep + "q=" + encodeURIComponent(query);
 
           return (
             '<a href="' +
@@ -545,8 +546,8 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         // Fetch a window wider than we render, then put members first with each
         // group keeping Pagefind's relevance order.
         async function rankedResults(pf, query) {
-          var res = await pf.search(query);
-          var candidates = await Promise.all(
+          const res = await pf.search(query);
+          const candidates = await Promise.all(
             res.results
               .slice(0, RESULT_LIMIT + RESULT_OVERSCAN)
               .map(function (h) {
@@ -569,7 +570,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         async function loadPagefind() {
           if (pagefind) return pagefind;
           try {
-            var base = document.body.dataset.base || "/";
+            const base = document.body.dataset.base || "/";
             pagefind = await import(base + "pagefind/pagefind.js");
             await pagefind.init();
           } catch (e) {
@@ -583,7 +584,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         }
 
         function setActive(index) {
-          var opts = getOptions();
+          const opts = getOptions();
           opts.forEach(function (o) {
             o.classList.remove("bg-(--color-surface-alt)");
             o.setAttribute("aria-selected", "false");
@@ -599,7 +600,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
           }
         }
 
-        var modalPanel = document.querySelector("#search-panel");
+        const modalPanel = document.querySelector("#search-panel");
 
         function getFocusable() {
           return modal.querySelectorAll(
@@ -647,10 +648,10 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
           if (modal.classList.contains("hidden")) return;
 
           if (e.key === "Tab") {
-            var focusable = getFocusable();
+            const focusable = getFocusable();
             if (focusable.length === 0) return;
-            var first = focusable[0];
-            var last = focusable.at(-1);
+            const first = focusable[0];
+            const last = focusable.at(-1);
             if (e.shiftKey) {
               if (document.activeElement === first) {
                 e.preventDefault();
@@ -677,7 +678,7 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
             return;
           }
 
-          var opts = getOptions();
+          const opts = getOptions();
           if (opts.length === 0) return;
 
           if (e.key === "ArrowDown") {
@@ -699,13 +700,13 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
             return;
           }
 
-          var pf = await loadPagefind();
+          const pf = await loadPagefind();
           if (!pf) {
             showMessage("Search unavailable (run a build first).");
             return;
           }
 
-          var items = await rankedResults(pf, query);
+          const items = await rankedResults(pf, query);
           activeIndex = -1;
 
           if (items.length === 0) {

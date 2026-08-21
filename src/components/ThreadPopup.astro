@@ -14,32 +14,35 @@ const threadsJson = JSON.stringify(Object.fromEntries(threads));
 </div>
 
 <script is:inline define:vars={{ threadsJson }}>
-	var threads = JSON.parse(threadsJson);
-	var popup = document.querySelector('#thread-popup');
-	var content = document.querySelector('#thread-popup-content');
-	var pp = window.__popup;
+	// Scoped: MemberPopup declares the same names, and both render on a forum page
+	(function() {
+		const threads = JSON.parse(threadsJson);
+		const popup = document.querySelector('#thread-popup');
+		const content = document.querySelector('#thread-popup-content');
+		const pp = window.__popup;
 
-	function esc(s) {
-		var d = document.createElement('div');
-		d.textContent = s;
-		return d.innerHTML;
-	}
+		function esc(s) {
+			const d = document.createElement('div');
+			d.textContent = s;
+			return d.innerHTML;
+		}
 
-	function render(id) {
-		var t = threads[id];
-		if (!t) return false;
+		function render(id) {
+			const t = threads[id];
+			if (!t) return false;
 
-		content.innerHTML =
-			'<p style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:0.25rem">' +
-			esc(t.author) + ' · ' + esc(String(t.postCount)) + ' posts</p>' +
-			'<p style="font-size:0.875rem;line-height:1.4">' + esc(t.excerpt) + '</p>';
-		return true;
-	}
+			content.innerHTML =
+				'<p style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:0.25rem">' +
+				esc(t.author) + ' · ' + esc(String(t.postCount)) + ' posts</p>' +
+				'<p style="font-size:0.875rem;line-height:1.4">' + esc(t.excerpt) + '</p>';
+			return true;
+		}
 
-	pp.attach({
-		popup: popup,
-		selector: '.thread-trigger',
-		key: function(el) { return el.dataset.threadId; },
-		render: render,
-	});
+		pp.attach({
+			popup: popup,
+			selector: '.thread-trigger',
+			key: function(el) { return el.dataset.threadId; },
+			render: render,
+		});
+	})();
 </script>

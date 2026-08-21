@@ -13,6 +13,7 @@ export default defineConfig({
 	},
 	rules: {
 		eqeqeq: 'warn',
+		'no-var': 'error',
 		'import/no-cycle': 'error',
 		'no-underscore-dangle': ['warn', { allow: ['__popup'] }],
 		'import/no-unassigned-import': ['warn', { allow: ['**/*.css'] }],
