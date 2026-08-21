@@ -1,7 +1,6 @@
-workspaces:
-  packages:
-    - './'
-    - '.github/actions/*'
+packages:
+  - '.'
+  - '.github/actions/*'
 
 allowBuilds:
   esbuild: false

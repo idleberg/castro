@@ -2,9 +2,17 @@ name: 'Generate Chunks'
 description: 'Generates chunks of URLs from a sitemap'
 
 inputs:
-  site-map:
-    description: 'JSON array of URLs to submit'
+  sitemap-url:
+    description: 'Sitemap URL to process'
     required: true
+  chunk-size:
+    description: 'Number of URLs per chunk'
+    required: false
+    default: '50'
+
+outputs:
+  matrix:
+    description: 'JSON array of URL chunks, suitable for a job matrix'
 
 runs:
   using: 'node24'
