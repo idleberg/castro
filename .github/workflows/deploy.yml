@@ -79,6 +79,7 @@ jobs:
     needs: [build, deploy]
     if: needs.build.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Resolve GitHub Pages URL
         id: pages
