@@ -1,4 +1,4 @@
-name: Bulk Submit to Internet Archive
+name: Submit to Internet Archive
 
 on:
   workflow_dispatch:
