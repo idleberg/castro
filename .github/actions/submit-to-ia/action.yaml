@@ -5,12 +5,24 @@ inputs:
   url-chunk:
     description: 'JSON array of URLs to submit'
     required: true
-  # ia-access-key:
-  #   description: "Internet Archive Access Key"
-  #   required: true
-  # ia-secret-key:
-  #   description: "Internet Archive Secret Key"
-  #   required: true
+  ia-access-key:
+    description: 'Internet Archive S3 access key, see https://archive.org/account/s3.php'
+    required: false
+  ia-secret-key:
+    description: 'Internet Archive S3 secret key, see https://archive.org/account/s3.php'
+    required: false
+  if-not-archived-within:
+    description: 'Skip the capture when a snapshot within this timespan exists, e.g. "30d". Leave empty to force a fresh capture of every URL'
+    required: false
+    default: '30d'
+  request-delay:
+    description: 'Delay between captures in milliseconds, authenticated accounts allow 6 per minute'
+    required: false
+    default: '10000'
+  fail-on-error:
+    description: 'Fail the step when at least one URL could not be archived'
+    required: false
+    default: 'false'
 
 runs:
   using: 'node24'

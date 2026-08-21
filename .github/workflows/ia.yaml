@@ -52,8 +52,9 @@ jobs:
     strategy:
       # Prevents one failing chunk from cancelling all other active jobs
       fail-fast: false
-      # Adjust max-parallel based on GitHub runner limits and API limits
-      max-parallel: 4
+      # The Internet Archive allows 6 captures per minute per account, a budget
+      # shared across all jobs, so chunks are submitted one job at a time
+      max-parallel: 1
       matrix:
         chunk: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
@@ -81,13 +82,5 @@ jobs:
         uses: './.github/actions/submit-to-ia'
         with:
           url-chunk: ${{ toJson(matrix.chunk) }}
-
-      # - name: Submit Chunk to Internet Archive
-      #   env:
-      #     IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
-      #     IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
-      #     # Pass the JSON array chunk directly to the script
-      #     URL_CHUNK: ${{ toJson(matrix.chunk) }}
-      #   run: |
-      #     # Runs your TypeScript script with fetchWithRetry logic
-      #     npx ts-node ./scripts/submit-chunk.ts
+          ia-access-key: ${{ secrets.IA_ACCESS_KEY }}
+          ia-secret-key: ${{ secrets.IA_SECRET_KEY }}

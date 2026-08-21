@@ -2,7 +2,6 @@
 	"name": "@castro/submit-to-ia",
 	"private": true,
 	"dependencies": {
-		"@actions/core": "^3.0.1",
-		"archive-url": "^1.1.1"
+		"@actions/core": "^3.0.1"
 	}
 }
