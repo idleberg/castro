@@ -4,14 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       sitemap_url:
-        description: 'Sitemap URL to process'
-        required: true
-        default: 'https://idleberg.github.io/castro/sitemap-index.xml'
+        description: 'Sitemap URL to process (defaults to this repository’s GitHub Pages sitemap)'
+        required: false
 
 jobs:
   # Job 1: Parse sitemap and create chunked JSON array
   prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     outputs:
       matrix: ${{ steps.generate-chunks.outputs.matrix }}
     steps:
@@ -24,11 +26,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Resolves the site's base URL from the repository's Pages settings, so
+      # that custom domains are honoured as well
+      - name: Resolve GitHub Pages URL
+        id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
       - name: Generate URL Chunks
         id: generate-chunks
         uses: './.github/actions/generate-chunks'
         with:
-          sitemap-url: ${{ inputs.sitemap_url }}
+          sitemap-url: ${{ inputs.sitemap_url || format('{0}/sitemap-index.xml', steps.pages.outputs.base_url) }}
 
   # Job 2: Process chunks in parallel via matrix
   submit:
