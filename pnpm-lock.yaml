@@ -49,7 +49,7 @@ importers:
         specifier: ^23.0.1
         version: 23.0.1
 
-  .github/actions/generate-chunks:
+  .github/actions/submit-to-ia:
     dependencies:
       '@actions/core':
         specifier: ^3.0.1
@@ -57,12 +57,10 @@ importers:
       sitemapper:
         specifier: ^4.1.6
         version: 4.1.6
-
-  .github/actions/submit-to-ia:
-    dependencies:
-      '@actions/core':
-        specifier: ^3.0.1
-        version: 3.0.1
+    devDependencies:
+      '@types/node':
+        specifier: ^26.2.0
+        version: 26.2.0
 
 packages:
 
