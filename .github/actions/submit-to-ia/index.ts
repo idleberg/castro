@@ -14,7 +14,7 @@ async function run(): Promise<void> {
 			core.info(`Submitting ${url} to Internet Archive...`);
 
 			const result = await archiveUrl(url, {
-				timeout: 20_000,
+				timeout: 3_000,
 				retries: 10,
 			});
 
