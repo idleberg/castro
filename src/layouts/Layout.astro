@@ -603,9 +603,13 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
         const modalPanel = document.querySelector("#search-panel");
 
         function getFocusable() {
-          return modal.querySelectorAll(
-            'input, a[href], button, [tabindex]:not([tabindex="-1"])',
-          );
+          return Array.from(
+            modal.querySelectorAll(
+              'input, a[href], button, [tabindex]:not([tabindex="-1"])',
+            ),
+          ).filter(function (el) {
+            return !el.disabled && el.getClientRects().length > 0;
+          });
         }
 
         function openModal() {
@@ -649,15 +653,23 @@ const { title = SITE_NAME, indexable = true } = Astro.props;
 
           if (e.key === "Tab") {
             const focusable = getFocusable();
-            if (focusable.length === 0) return;
+            if (focusable.length === 0) {
+              e.preventDefault();
+              return;
+            }
             const first = focusable[0];
             const last = focusable.at(-1);
-            if (e.shiftKey) {
-              if (document.activeElement === first) {
+            const active = document.activeElement;
+            if (!modal.contains(active)) {
+              // Focus escaped the dialog (or never entered it) — pull it back.
+              e.preventDefault();
+              (e.shiftKey ? last : first).focus();
+            } else if (e.shiftKey) {
+              if (active === first) {
                 e.preventDefault();
                 last.focus();
               }
-            } else if (document.activeElement === last) {
+            } else if (active === last) {
               e.preventDefault();
               first.focus();
             }
