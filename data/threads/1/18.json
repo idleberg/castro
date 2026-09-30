@@ -1,0 +1,67 @@
+{
+	"url": "/forum/the-agora/18-your-forum-s-clock-is-wrong",
+	"title": "Your forum's clock is wrong",
+	"totalPages": 1,
+	"posts": [
+		{
+			"id": 18000,
+			"title": "Your forum's clock is wrong",
+			"author": "Chronos",
+			"authorId": 13,
+			"body": "Good evening, little ones.<br><br>I have been reading your forum with great interest, as I read everything, eventually. I must bring a small matter to your attention. The timestamps on your posts are wrong. Not by much. A few seconds here, a drift there. Your moderator's server keeps time the way mortals do — approximately, and with confidence.<br><br>I am the Titan of Time. I could correct this for you. I would require only a very small concession in return: the house at the bottom of the world, and everyone in it, for as long as I like. Which, you will appreciate, is a considerable period.<br><br>Consider it. There is no rush. For me there is never any rush.",
+			"created": "2001-06-14T00:00:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 18001,
+			"title": "",
+			"author": "Melinoë",
+			"authorId": 7,
+			"body": "Get out of my father's house.",
+			"created": "2001-06-14T00:02:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 18002,
+			"title": "",
+			"author": "Chronos",
+			"authorId": 13,
+			"body": "Granddaughter! How lovely. You are looking well, for someone who has died so very many times. Do give my regards to the Witch.",
+			"created": "2001-06-14T00:02:30.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 18003,
+			"title": "",
+			"author": "Hecate",
+			"authorId": 8,
+			"body": "He has regards for no one. Members are advised not to reply to him, not to accept his offers, and under no circumstances to agree with him about the time.<br><br>Death to Chronos.",
+			"created": "2001-06-14T00:09:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 18004,
+			"title": "",
+			"author": "Odysseus",
+			"authorId": 1,
+			"body": "For what it is worth, I checked. The timestamps are fine.",
+			"created": "2001-06-14T08:20:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 18005,
+			"title": "",
+			"author": "Athena",
+			"authorId": 3,
+			"body": "Locked. The server clock is synchronized with Olympus, which is to say it is correct by definition.<br><br>Chronos, your account has not been banned, because I would like to keep an eye on it. Do not mistake that for hospitality.",
+			"created": "2001-06-14T09:00:00.000Z",
+			"updated": "",
+			"attachments": []
+		}
+	]
+}

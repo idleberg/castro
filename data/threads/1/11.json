@@ -1,0 +1,67 @@
+{
+	"url": "/forum/the-agora/11-what-is-everyone-reading",
+	"title": "What is everyone reading?",
+	"totalPages": 1,
+	"posts": [
+		{
+			"id": 11000,
+			"title": "What is everyone reading?",
+			"author": "Virgil",
+			"authorId": 4,
+			"body": "Limbo has an excellent library and no one to discuss it with — everyone there wrote half of it and they are all very tired of each other. So: what are you reading?<br><br>I am rereading Lucretius. He argues at great length that death is nothing to us, since where death is, we are not. It is a beautiful argument. I have been dead for a very long time and I can report that it holds up less well from this side.",
+			"created": "2001-05-06T20:10:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 11001,
+			"title": "",
+			"author": "Dante",
+			"authorId": 5,
+			"body": "Your book, Virgil. Always your book. I would like to pretend otherwise so as not to seem like a flatterer, but I carried it through three realms and there is no one here who does not already know.",
+			"created": "2001-05-07T07:50:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 11002,
+			"title": "",
+			"author": "Achilles",
+			"authorId": 2,
+			"body": "Someone gave me the <i>Iliad</i>. I got as far as the first word — rage — and put it down. I know how it ends. I was there. I do not need twenty-four books to tell me I was angry.",
+			"created": "2001-05-07T23:15:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 11003,
+			"title": "",
+			"author": "Odysseus",
+			"authorId": 1,
+			"body": "I am reading the <i>Odyssey</i>, obviously, for accuracy. So far: the Cyclops chapter is fair, the Phaeacian chapter is flattering, and the entire first four books are about my son looking for me, which I did not know about and which has been a difficult experience.",
+			"created": "2001-05-08T10:40:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 11004,
+			"title": "",
+			"author": "Arachne",
+			"authorId": 10,
+			"body": "Not reading. Weaving. But I have Ovid's <i>Metamorphoses</i> on loan and I will say he got my tapestry exactly right, which is more than anyone at the contest did.",
+			"created": "2001-05-09T03:20:00.000Z",
+			"updated": "",
+			"attachments": []
+		},
+		{
+			"id": 11005,
+			"title": "",
+			"author": "Circe",
+			"authorId": 12,
+			"body": "Also Ovid. He gave me a whole section of my own and did not once describe me as an obstacle on the way to somewhere else, which puts him comfortably ahead of Homer.",
+			"created": "2001-05-09T14:55:00.000Z",
+			"updated": "",
+			"attachments": []
+		}
+	]
+}
