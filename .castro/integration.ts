@@ -10,6 +10,10 @@ interface CastroConfig {
 	description?: string;
 	keywords?: string[];
 	githubPages?: boolean;
+	/** Threads per forum listing page. Defaults to 50. */
+	threadsPerPage?: number;
+	/** Posts per thread page. Defaults to 30. */
+	postsPerPage?: number;
 }
 
 export default function castro(options: CastroConfig): AstroIntegration {
@@ -47,7 +51,7 @@ function resolveSite(
 	return { site: `http://localhost:${config.server.port}` };
 }
 
-function resolveEnvSchema({ title, description, keywords }: CastroConfig) {
+function resolveEnvSchema({ title, description, keywords, threadsPerPage = 50, postsPerPage = 30 }: CastroConfig) {
 	return {
 		SITE_NAME: envField.string({
 			context: 'server',
@@ -63,6 +67,20 @@ function resolveEnvSchema({ title, description, keywords }: CastroConfig) {
 			context: 'server',
 			access: 'public',
 			...(keywords?.length ? { default: keywords.join(', ') } : { optional: true }),
+		}),
+		THREADS_PER_PAGE: envField.number({
+			context: 'server',
+			access: 'public',
+			int: true,
+			gt: 0,
+			default: threadsPerPage,
+		}),
+		POSTS_PER_PAGE: envField.number({
+			context: 'server',
+			access: 'public',
+			int: true,
+			gt: 0,
+			default: postsPerPage,
 		}),
 	};
 }

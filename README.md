@@ -38,6 +38,8 @@ export default defineConfig({
 			description: 'An archive of the old forum',
 			keywords: ['forum', 'archive'],
 			githubPages: true,
+			threadsPerPage: 50, // default
+			postsPerPage: 30, // default
 		}),
 		// Your custom Astro config
 	],

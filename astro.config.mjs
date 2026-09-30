@@ -8,6 +8,8 @@ export default defineConfig({
 		castro({
 			title: 'Forum Archive',
 			githubPages: true,
+			threadsPerPage: 10,
+			postsPerPage: 5,
 		}),
 		sitemap(),
 	],

@@ -1,4 +1,4 @@
-export const FORUM_PER_PAGE = 50;
+export { THREADS_PER_PAGE as FORUM_PER_PAGE } from 'astro:env/server';
 
 /**
  * Gates for the "most active"/"most viewed" rankings on member pages. Both rank

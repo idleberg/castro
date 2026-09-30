@@ -7,10 +7,8 @@ import MemberPopup from '../../components/MemberPopup.astro';
 import Pagination from '../../components/Pagination.astro';
 import ScrollToMatch from '../../components/ScrollToMatch.astro';
 import { getThread, getAllThreadIds, getMember, getForumForThread, getRootForum, getThreadRef, type Breadcrumb, type MemberData } from '../../lib/data.ts';
-import { SITE_NAME } from 'astro:env/server';
+import { POSTS_PER_PAGE, SITE_NAME } from 'astro:env/server';
 import { threadSlug, routePath } from '../../lib/format.ts';
-
-const PER_PAGE = 30;
 
 export async function getStaticPaths() {
 	const ids = await getAllThreadIds();
@@ -19,7 +17,7 @@ export async function getStaticPaths() {
 		const thread = await getThread(id);
 		if (!thread) continue;
 		const s = threadSlug(id, thread.title);
-		const totalPages = Math.max(1, Math.ceil(thread.posts.length / 30));
+		const totalPages = Math.max(1, Math.ceil(thread.posts.length / POSTS_PER_PAGE));
 		for (let i = 0; i < totalPages; i++) {
 			paths.push({
 				params: { slug: i === 0 ? s : `${s}/page/${i + 1}` },
@@ -44,7 +42,7 @@ if (parentForum && parentForum.channelId !== rootForum?.channelId) {
 }
 crumbs.push({ label: thread.title });
 
-const posts = thread.posts.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+const posts = thread.posts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
 
 const authorIds = [...new Set(posts.map((p) => p.authorId))];
 const members = new Map<number, MemberData>();

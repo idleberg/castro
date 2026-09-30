@@ -52,11 +52,12 @@ mark {
 }
 
 /*
- * Keep hash-linked posts clear of the sticky breadcrumb bar (py-2 + text-base +
- * 1px border ≈ 2.6rem) and the sticky pagination bar at the bottom.
+ * Keep hash-linked posts clear of the sticky header (h-14 = 3.5rem), the sticky
+ * breadcrumb bar below it (py-2 + text-base + 1px border ≈ 2.6rem) and the
+ * sticky pagination bar at the bottom.
  */
 html {
-	scroll-padding-top: 3.25rem;
+	scroll-padding-top: 6.75rem;
 	scroll-padding-bottom: 3.5rem;
 }
 
