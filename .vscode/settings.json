@@ -4,7 +4,7 @@
 	},
 	"editor.defaultFormatter": "oxc.oxc-vscode",
 	"editor.formatOnSave": true,
-	"oxc.fmt.configPath": ".oxfmtrc.json",
+	"oxc.fmt.configPath": "oxfmt.configjson",
 	"oxc.typeAware": true,
 	"[typescript]": {
 		"editor.defaultFormatter": "oxc.oxc-vscode"
